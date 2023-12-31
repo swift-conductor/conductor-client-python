@@ -98,7 +98,7 @@ class ConductorWorkflow:
         return self
 
     # Workflow output follows similar structure as task input
-    # See https://conductor.netflix.com/how-tos/Tasks/task-inputs.html for more details
+    # See https://swiftconductor.com/devguide/how-tos/Tasks/task-inputs.html for more details
     def output_parameters(self, output_parameters: Dict[str, Any]) -> Self:
         if output_parameters == None:
             self._output_parameters = {}

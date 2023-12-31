@@ -1,4 +1,4 @@
-# Netflix Conductor SDK - Python
+# Swift Conductor SDK - Python
 
 The `conductor-client-python` repository provides the client SDKs to manage:
 1. Task workers
