@@ -4,7 +4,7 @@ from conductor.client.http.api_client import ApiClient
 from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
 from metadata.test_workflow_definition import run_workflow_definition_tests
 from workflow.test_workflow_execution import run_workflow_execution_tests
-from client.orkes.test_orkes_clients import TestOrkesClients
+from tests.integration.client.clients.test_client_clients import TestClients
 from client import test_async
 
 import logging
@@ -50,15 +50,15 @@ def main():
     api_client = ApiClient(configuration)
     workflow_executor = WorkflowExecutor(configuration)
 
-    if len(args) == 1 and args[0] == '--orkes-clients-only':
-        TestOrkesClients(configuration=configuration).run()
+    if len(args) == 1 and args[0] == '--clients-only':
+        TestClients(configuration=configuration).run()
     elif len(args) == 1 and args[0] == '--workflow-execution-only':
         run_workflow_execution_tests(configuration, workflow_executor)
     else:
         test_async.test_async_method(api_client)
         run_workflow_definition_tests(workflow_executor)
         run_workflow_execution_tests(configuration, workflow_executor)
-        TestOrkesClients(configuration=configuration).run()
+        TestClients(configuration=configuration).run()
 
 if __name__ == "__main__":
     main()

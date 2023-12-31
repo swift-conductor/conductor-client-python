@@ -9,7 +9,7 @@ In order to define a workflow, you must provide a `MetadataClient` and a `Workfl
 ```python
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.configuration.settings.authentication_settings import AuthenticationSettings
-from conductor.client.orkes.orkes_metadata_client import OrkesMetadataClie
+from conductor.client.clients.metadata_client import MetadataClie
 from conductor.client.workflow.conductor_workflow import ConductorWorkflow
 from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
 
@@ -19,7 +19,7 @@ configuration = Configuration(
     authentication_settings=AuthenticationSettings(key_id=KEY_ID, key_secret=KEY_SECRET)
 )
 
-metadata_client = OrkesMetadataClient(configuration)
+metadata_client = MetadataClient(configuration)
 
 workflow_executor = WorkflowExecutor(configuration)
 workflow = ConductorWorkflow(
@@ -141,7 +141,7 @@ metadata_client.unregisterTaskDef('python_task_example_from_code')
 You should be able to set tags on your workflow:
 
 ```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.metadata_tag import MetadataTag
 
 tags = [
     MetadataTag("wftag1", "val1"),
@@ -173,7 +173,7 @@ tags = metadata_client.getWorkflowTags('python_workflow_example_from_code')
 You should be able to delete a tag on your workflow:
 
 ```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.metadata_tag import MetadataTag
 
 tag = MetadataTag("wftag2", "val2")
 metadata_client.deleteWorkflowTag(tag, 'python_workflow_example_from_code')
@@ -184,7 +184,7 @@ metadata_client.deleteWorkflowTag(tag, 'python_workflow_example_from_code')
 You should be able to set tags for your task:
 
 ```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.metadata_tag import MetadataTag
 
 tags = [
     MetadataTag("tag2", "val2"),
@@ -216,7 +216,7 @@ tags = metadata_client.getTaskTags('PYTHON_TASK')
 You should be able to delete a tag on your task:
 
 ```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.metadata_tag import MetadataTag
 
 tag = MetadataTag("tag1", "val1"),
 metadata_client.deleteTaskTag(tag, 'PYTHON_TASK')
@@ -247,6 +247,6 @@ rate_limit = metadata_client.getWorkflowRateLimit('python_workflow_example_from_
 You should be able to remove the rate limit on your workflow:
 
 ```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.metadata_tag import MetadataTag
 
 metadata_client.removeWorkflowRateLimit('python_workflow_example_from_code')

@@ -146,7 +146,7 @@ python3 main.py
 ```
 
 ## Task Domains
-Workers can be configured to start polling for work that is tagged by a task domain. See more on domains [here](https://orkes.io/content/developer-guides/task-to-domain).
+Workers can be configured to start polling for work that is tagged by a task domain. See more on domains [here](https://swiftconductor.com/documentation/configuration/taskdomains.html).
 
 
 ```python
@@ -270,15 +270,16 @@ conductor_worker_python_annotated_task_2_domain=hot
 ```
 
 ### Order of Precedence
+
 If the worker configuration is initialized using multiple mechanisms mentioned above then the following order of priority
 will be considered from highest to lowest:
+
 1. Environment Variables
 2. Config File
 3. Worker Constructor Arguments
 
-See [Using Conductor Playground](https://orkes.io/content/docs/getting-started/playground/using-conductor-playground) for more details on how to use Playground environment for testing.
-
 ## Performance
+
 If you're looking for better performance (i.e. more workers of the same type) - you can simply append more instances of the same worker, like this:
 
 ```python
@@ -318,27 +319,30 @@ workers = [
 ```
 
 ## C/C++ Support
+
 Python is great, but at times you need to call into native C/C++ code. 
 Here is an example how you can do that with Conductor SDK.
 
 ### 1. Export your C++ functions as `extern "C"`:
    * C++ function example (sum two integers)
-        ```cpp
-        #include <iostream>
+    ```cpp
+    #include <iostream>
 
-        extern "C" int32_t get_sum(const int32_t A, const int32_t B) {
-            return A + B;
-        }
-        ```
+    extern "C" int32_t get_sum(const int32_t A, const int32_t B) {
+        return A + B;
+    }
+    ```
+
 ### 2. Compile and share its library:
    * C++ file name: `simple_cpp_lib.cpp`
    * Library output name goal: `lib.so`
-        ```shell
-        g++ -c -fPIC simple_cpp_lib.cpp -o simple_cpp_lib.o
-        g++ -shared -Wl,-install_name,lib.so -o lib.so simple_cpp_lib.o
-        ```
+    ```sh
+    g++ -c -fPIC simple_cpp_lib.cpp -o simple_cpp_lib.o
+    g++ -shared -Wl,-install_name,lib.so -o lib.so simple_cpp_lib.o
+    ```
      
 ### 3. Use the C++ library in your python worker
+
 You can use the Python library to call native code written in C++.  Here is an example that calls native C++ library
 from the Python worker.
 See [simple_cpp_lib.cpp](src/example/worker/cpp/simple_cpp_lib.cpp) 

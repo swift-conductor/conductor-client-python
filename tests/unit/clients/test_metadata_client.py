@@ -4,26 +4,26 @@ import json
 
 from unittest.mock import Mock, patch, MagicMock
 from conductor.client.http.rest import ApiException
-from conductor.client.orkes.orkes_metadata_client import OrkesMetadataClient
+from conductor.client.clients.metadata_client import MetadataClient
 from conductor.client.http.api.metadata_resource_api import MetadataResourceApi
-from conductor.client.orkes.api.tags_api import TagsApi
+from conductor.client.clients.api.tags_api import TagsApi
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.models.workflow_def import WorkflowDef
 from conductor.client.http.models.tag_string import TagString
-from conductor.client.orkes.models.metadata_tag import MetadataTag
-from conductor.client.orkes.models.ratelimit_tag import RateLimitTag
+from conductor.client.clients.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.ratelimit_tag import RateLimitTag
 from conductor.client.http.models.task_def import TaskDef
 from conductor.client.exceptions.api_error import APIError
 
 WORKFLOW_NAME = 'ut_wf'
 TASK_NAME = 'ut_task'
 
-class TestOrkesMetadataClient(unittest.TestCase):
+class TestMetadataClient(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
         configuration = Configuration("http://localhost:8080/api")
-        cls.metadata_client = OrkesMetadataClient(configuration)
+        cls.metadata_client = MetadataClient(configuration)
         
     def setUp(self):
         self.workflowDef = WorkflowDef(name=WORKFLOW_NAME, version=1)
@@ -210,7 +210,7 @@ class TestOrkesMetadataClient(unittest.TestCase):
         mock.assert_called_with(WORKFLOW_NAME)
         self.assertIsNone(rateLimit)
 
-    @patch.object(OrkesMetadataClient, 'getWorkflowRateLimit')
+    @patch.object(MetadataClient, 'getWorkflowRateLimit')
     @patch.object(TagsApi, 'delete_workflow_tag')
     def test_removeWorkflowRateLimit(self, patchedTagsApi, patchedMetadataClient):
         patchedMetadataClient.return_value = 5

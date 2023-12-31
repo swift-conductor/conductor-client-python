@@ -5,7 +5,7 @@ from conductor.client.http.models.start_workflow_request import StartWorkflowReq
 from conductor.client.http.models.rerun_workflow_request import RerunWorkflowRequest
 from conductor.client.http.models.workflow_test_request import WorkflowTestRequest
 
-class WorkflowClient(ABC):
+class WorkflowClientABC(ABC):
     @abstractmethod
     def startWorkflow(self, startWorkflowRequest: StartWorkflowRequest) -> str:
         pass

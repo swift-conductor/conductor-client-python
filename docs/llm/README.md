@@ -12,18 +12,12 @@ from conductor.client.workflow.task.embedding_model import EmbeddingModel
 from conductor.client.workflow.task.simple_task import SimpleTask
 import json
 
-SERVER_API_URL = 'https://play.orkes.io/api'
-KEY_ID = 'keyId'
-KEY_SECRET = 'keySecret'
+SERVER_API_URL = 'http://localhost:8080/api'
 
 def main():
     configuration = Configuration(
         server_api_url=SERVER_API_URL,
-        debug=True,
-        authentication_settings=AuthenticationSettings(
-            key_id=KEY_ID,
-            key_secret=KEY_SECRET
-        ),
+        debug=True
     )
     workflow_executor = WorkflowExecutor(configuration)
     llm_text_comp = LlmTextComplete("llm_text_complete", "llm_text_complete_ref", "openai", "text-davinci-003", "dogs", 0, 0)

@@ -6,7 +6,7 @@
 ```python
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.configuration.settings.authentication_settings import AuthenticationSettings
-from conductor.client.orkes.orkes_authorization_client import OrkesAuthorizationClient
+from conductor.client.clients.authorization_client import AuthorizationClient
 
 configuration = Configuration(
     server_api_url=SERVER_API_URL,
@@ -14,7 +14,7 @@ configuration = Configuration(
     authentication_settings=AuthenticationSettings(key_id=KEY_ID, key_secret=KEY_SECRET)
 )
 
-authorization_client = OrkesAuthorizationClient(configuration)
+authorization_client = AuthorizationClient(configuration)
 ```
 
 ### Application Management
@@ -67,7 +67,7 @@ authorization_client.removeRoleFromApplicationUser(application_id, "USER")
 
 #### Set Application tags
 ```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.metadata_tag import MetadataTag
 
 tags = [
     MetadataTag("auth_tag", "val"), MetadataTag("auth_tag_2", "val2")
@@ -95,7 +95,7 @@ Creates an access key for the specified application and returns a CreatedAccessK
 The SECRET for this access key is available in the returned object. This is the only time
 when the secret for this newly created access key can be retrieved and saved.
 ```python
-from conductor.client.orkes.models.created_access_key import CreatedAccessKey
+from conductor.client.clients.models.created_access_key import CreatedAccessKey
 
 created_access_key = authorization_client.createAccessKey(application_id)
 ```
@@ -104,7 +104,7 @@ created_access_key = authorization_client.createAccessKey(application_id)
 Retrieves all access keys for the specified application as List[AccessKey].
 
 ```python
-from conductor.client.orkes.models.access_key import AccessKey
+from conductor.client.clients.models.access_key import AccessKey
 
 access_keys = authorization_client.getAccessKeys(application_id)
 ```
@@ -204,7 +204,7 @@ Grants a set of accesses to the specified Subject for a given Target.
 ```python
 from conductor.client.http.models.target_ref import TargetRef, TargetType
 from conductor.client.http.models.subject_ref import SubjectRef, SubjectType
-from conductor.client.orkes.models.access_type import AccessType
+from conductor.client.clients.models.access_type import AccessType
 
 target = TargetRef(TargetType.WORKFLOW_DEF, "TEST_WORKFLOW")
 subject_group = SubjectRef(SubjectType.GROUP, group_id)
@@ -230,7 +230,7 @@ target_permissions = authorization_client.getPermissions(target)
 #### Get Permissions granted to a Group
 Given a group id, returns all the permissions granted to a group as List[GrantedPermission].
 ```python
-from conductor.client.orkes.models.granted_permission import GrantedPermission
+from conductor.client.clients.models.granted_permission import GrantedPermission
 
 group_permissions = authorization_client.getGrantedPermissionsForGroup(group_id)
 ```
@@ -238,7 +238,7 @@ group_permissions = authorization_client.getGrantedPermissionsForGroup(group_id)
 #### Get Permissions granted to a User
 Given a user id, returns all the permissions granted to a user as List[GrantedPermission].
 ```python
-from conductor.client.orkes.models.granted_permission import GrantedPermission
+from conductor.client.clients.models.granted_permission import GrantedPermission
 
 user_permissions = authorization_client.getGrantedPermissionsForUser(user_id)
 ```
@@ -249,7 +249,7 @@ Removes a set of accesses from a specified Subject for a given Target.
 ```python
 from conductor.client.http.models.target_ref import TargetRef, TargetType
 from conductor.client.http.models.subject_ref import SubjectRef, SubjectType
-from conductor.client.orkes.models.access_type import AccessType
+from conductor.client.clients.models.access_type import AccessType
 
 target = TargetRef(TargetType.WORKFLOW_DEF, "TEST_WORKFLOW")
 subject_group = SubjectRef(SubjectType.GROUP, group_id)

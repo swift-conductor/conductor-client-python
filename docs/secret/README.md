@@ -6,7 +6,7 @@
 ```python
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.configuration.settings.authentication_settings import AuthenticationSettings
-from conductor.client.orkes.orkes_secret_client import OrkesSecretClient
+from conductor.client.clients.secret_client import SecretClient
 
 configuration = Configuration(
     server_api_url=SERVER_API_URL,
@@ -14,7 +14,7 @@ configuration = Configuration(
     authentication_settings=AuthenticationSettings(key_id=KEY_ID, key_secret=KEY_SECRET)
 )
 
-secret_client = OrkesSecretClient(configuration)
+secret_client = SecretClient(configuration)
 ```
 
 ### Saving Secret
@@ -48,7 +48,7 @@ secret_client.deleteSecret("SECRET_NAME")
 
 #### Set secret tags
 ```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.metadata_tag import MetadataTag
 
 tags = [
     MetadataTag("sec_tag", "val"), MetadataTag("sec_tag_2", "val2")

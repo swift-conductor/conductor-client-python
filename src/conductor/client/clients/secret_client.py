@@ -1,14 +1,14 @@
-from typing import List
+from typing import List, Set
 from conductor.client.configuration.configuration import Configuration
-from conductor.client.orkes.models.metadata_tag import MetadataTag
-from conductor.client.secret_client import SecretClient
-from conductor.client.orkes.orkes_base_client import OrkesBaseClient
+from conductor.client.clients.models.metadata_tag import MetadataTag
+from conductor.client.secret_client_abc import SecretClientABC
+from conductor.client.clients.base_client import BaseClient
 from conductor.client.exceptions.api_exception_handler import api_exception_handler, for_all_methods
 
 @for_all_methods(api_exception_handler, ["__init__"])
-class OrkesSecretClient(OrkesBaseClient, SecretClient):
+class SecretClient(BaseClient, SecretClientABC):
     def __init__(self, configuration: Configuration):
-        super(OrkesSecretClient, self).__init__(configuration)
+        super(SecretClient, self).__init__(configuration)
 
     def putSecret(self, key: str, value: str):
         self.secretResourceApi.put_secret(value, key)
@@ -16,7 +16,7 @@ class OrkesSecretClient(OrkesBaseClient, SecretClient):
     def getSecret(self, key: str) -> str:
         return self.secretResourceApi.get_secret(key)
     
-    def listAllSecretNames(self) -> set[str]:
+    def listAllSecretNames(self) -> Set[str]:
         return set(self.secretResourceApi.list_all_secret_names())
     
     def listSecretsThatUserCanGrantAccessTo(self) -> List[str]:

@@ -1,9 +1,9 @@
 # coding: utf-8
 
 """
-    Orkes Conductor API Server
+    Swift Conductor API Server
 
-    Orkes Conductor API Server  # noqa: E501
+    Swift Conductor API Server  # noqa: E501
 
     OpenAPI spec version: v2
     

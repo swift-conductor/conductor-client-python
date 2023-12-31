@@ -4,26 +4,26 @@ import json
 
 from unittest.mock import patch, MagicMock
 from conductor.client.http.rest import ApiException
-from conductor.client.orkes.orkes_scheduler_client import OrkesSchedulerClient
+from conductor.client.clients.scheduler_client import SchedulerClient
 from conductor.client.http.api.scheduler_resource_api import SchedulerResourceApi
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.models.workflow_def import WorkflowDef
 from conductor.client.http.models.workflow_schedule import WorkflowSchedule
 from conductor.client.http.models.save_schedule_request import SaveScheduleRequest
 from conductor.client.http.models.search_result_workflow_schedule_execution_model import SearchResultWorkflowScheduleExecutionModel
-from conductor.client.orkes.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.metadata_tag import MetadataTag
 from conductor.client.exceptions.api_error import APIError
 
 SCHEDULE_NAME = 'ut_schedule'
 WORKFLOW_NAME = 'ut_wf'
 ERROR_BODY= '{"message":"No such schedule found by name"}'
 
-class TestOrkesSchedulerClient(unittest.TestCase):
+class TestSchedulerClient(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         configuration = Configuration("http://localhost:8080/api")
-        cls.scheduler_client = OrkesSchedulerClient(configuration)
+        cls.scheduler_client = SchedulerClient(configuration)
         
     def setUp(self):
         self.workflowSchedule = WorkflowSchedule(name=SCHEDULE_NAME)

@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
-from conductor.client.orkes.models.metadata_tag import MetadataTag
-from conductor.client.orkes.models.access_type import AccessType
-from conductor.client.orkes.models.granted_permission import GrantedPermission
-from conductor.client.orkes.models.access_key import AccessKey
-from conductor.client.orkes.models.created_access_key import CreatedAccessKey
+from conductor.client.clients.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.access_type import AccessType
+from conductor.client.clients.models.granted_permission import GrantedPermission
+from conductor.client.clients.models.access_key import AccessKey
+from conductor.client.clients.models.created_access_key import CreatedAccessKey
 from conductor.client.http.models.group import Group
 from conductor.client.http.models.target_ref import TargetRef
 from conductor.client.http.models.subject_ref import SubjectRef
@@ -15,7 +15,7 @@ from conductor.client.http.models.upsert_group_request import UpsertGroupRequest
 from conductor.client.http.models.authorization_request import AuthorizationRequest
 from conductor.client.http.models.create_or_update_application_request import CreateOrUpdateApplicationRequest
 
-class AuthorizationClient(ABC):
+class AuthorizationClientABC(ABC):
     # Applications
     @abstractmethod
     def createApplication(

@@ -6,7 +6,7 @@
 ```python
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.configuration.settings.authentication_settings import AuthenticationSettings
-from conductor.client.orkes.orkes_task_client import OrkesTaskClient
+from conductor.client.clients.task_client import TaskClient
 
 configuration = Configuration(
     server_api_url=SERVER_API_URL,
@@ -14,7 +14,7 @@ configuration = Configuration(
     authentication_settings=AuthenticationSettings(key_id=KEY_ID, key_secret=KEY_SECRET)
 )
 
-task_client = OrkesTaskClient(configuration)
+task_client = TaskClient(configuration)
 ```
 
 ### Task Polling

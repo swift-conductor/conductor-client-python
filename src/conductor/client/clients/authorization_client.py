@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional
-from conductor.client.orkes.models.metadata_tag import MetadataTag
-from conductor.client.orkes.models.access_type import AccessType
-from conductor.client.orkes.models.granted_permission import GrantedPermission
-from conductor.client.orkes.models.access_key import AccessKey
-from conductor.client.orkes.models.created_access_key import CreatedAccessKey
+from conductor.client.clients.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.access_type import AccessType
+from conductor.client.clients.models.granted_permission import GrantedPermission
+from conductor.client.clients.models.access_key import AccessKey
+from conductor.client.clients.models.created_access_key import CreatedAccessKey
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.models.group import Group
 from conductor.client.http.models.subject_ref import SubjectRef
@@ -14,14 +14,14 @@ from conductor.client.http.models.upsert_user_request import UpsertUserRequest
 from conductor.client.http.models.upsert_group_request import UpsertGroupRequest
 from conductor.client.http.models.authorization_request import AuthorizationRequest
 from conductor.client.http.models.create_or_update_application_request import CreateOrUpdateApplicationRequest
-from conductor.client.authorization_client import AuthorizationClient
-from conductor.client.orkes.orkes_base_client import OrkesBaseClient
+from conductor.client.authorization_client_abc import AuthorizationClientABC
+from conductor.client.clients.base_client import BaseClient
 from conductor.client.exceptions.api_exception_handler import api_exception_handler, for_all_methods
 
 @for_all_methods(api_exception_handler, ["__init__"])
-class OrkesAuthorizationClient(OrkesBaseClient, AuthorizationClient):
+class AuthorizationClient(BaseClient, AuthorizationClientABC):
     def __init__(self, configuration: Configuration):
-        super(OrkesAuthorizationClient, self).__init__(configuration)
+        super(AuthorizationClient, self).__init__(configuration)
 
     # Applications
     def createApplication(

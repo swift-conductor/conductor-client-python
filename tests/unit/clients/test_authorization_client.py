@@ -19,20 +19,20 @@ from conductor.client.http.models.target_ref import TargetRef, TargetType
 from conductor.client.http.models.conductor_user import ConductorUser
 from conductor.client.http.models.conductor_application import ConductorApplication
 from conductor.client.http.models.create_or_update_application_request import CreateOrUpdateApplicationRequest
-from conductor.client.orkes.models.access_type import AccessType
-from conductor.client.orkes.models.metadata_tag import MetadataTag
-from conductor.client.orkes.models.access_key import AccessKey
-from conductor.client.orkes.models.access_key_status import AccessKeyStatus
-from conductor.client.orkes.models.created_access_key import CreatedAccessKey
-from conductor.client.orkes.models.granted_permission import GrantedPermission
-from conductor.client.orkes.orkes_authorization_client import OrkesAuthorizationClient
+from conductor.client.clients.models.access_type import AccessType
+from conductor.client.clients.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.access_key import AccessKey
+from conductor.client.clients.models.access_key_status import AccessKeyStatus
+from conductor.client.clients.models.created_access_key import CreatedAccessKey
+from conductor.client.clients.models.granted_permission import GrantedPermission
+from conductor.client.clients.authorization_client import AuthorizationClient
 
 APP_ID = '5d860b70-a429-4b20-8d28-6b5198155882'
 APP_NAME = 'ut_application_name'
 ACCESS_KEY_ID = '9c32f5b2-128d-42bd-988f-083857f4c541'
 ACCESS_KEY_ID_2 = 'be41f18c-be18-4c68-9847-8fd91f3c21bc'
 ACCESS_KEY_SECRET = 'iSEONALN8Lz91uXraPBcyEau28luuOtMGnGA7mUSbJTZ76fb'
-USER_ID = 'us_user@orkes.io'
+USER_ID = 'us_user@swiftconductor.com'
 USER_UUID = 'ac8b5803-c391-4237-8d3d-90f74b07d5ad'
 USER_NAME = 'UT USER'
 GROUP_ID = 'ut_group'
@@ -40,12 +40,12 @@ GROUP_NAME = 'Test Group'
 WF_NAME = 'workflow_name'
 ERROR_BODY= '{"message":"No such application found by id"}'
 
-class TestOrkesAuthorizationClient(unittest.TestCase):
+class TestAuthorizationClient(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         configuration = Configuration("http://localhost:8080/api")
-        cls.authorization_client = OrkesAuthorizationClient(configuration)
+        cls.authorization_client = AuthorizationClient(configuration)
         cls.conductor_application = ConductorApplication(APP_ID, APP_NAME, USER_ID)
         cls.access_key = CreatedAccessKey(ACCESS_KEY_ID, ACCESS_KEY_SECRET)
         cls.app_keys = [

@@ -1,17 +1,17 @@
 from typing import Optional, List
 from conductor.client.configuration.configuration import Configuration
-from conductor.client.orkes.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.metadata_tag import MetadataTag
 from conductor.client.http.models.workflow_schedule import WorkflowSchedule
-from conductor.client.scheduler_client import SchedulerClient
+from conductor.client.scheduler_client_abc import SchedulerClientABC
 from conductor.client.http.models.save_schedule_request import SaveScheduleRequest
 from conductor.client.http.models.search_result_workflow_schedule_execution_model import SearchResultWorkflowScheduleExecutionModel
-from conductor.client.orkes.orkes_base_client import OrkesBaseClient
+from conductor.client.clients.base_client import BaseClient
 from conductor.client.exceptions.api_exception_handler import api_exception_handler, for_all_methods
 
 @for_all_methods(api_exception_handler, ["__init__"])
-class OrkesSchedulerClient(OrkesBaseClient, SchedulerClient):
+class SchedulerClient(BaseClient, SchedulerClientABC):
     def __init__(self, configuration: Configuration):
-        super(OrkesSchedulerClient, self).__init__(configuration)
+        super(SchedulerClient, self).__init__(configuration)
         
     def saveSchedule(self, saveScheduleRequest: SaveScheduleRequest):
         self.schedulerResourceApi.save_schedule(saveScheduleRequest)

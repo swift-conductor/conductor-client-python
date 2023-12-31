@@ -4,7 +4,7 @@ import json
 
 from unittest.mock import Mock, patch, MagicMock
 from conductor.client.http.rest import ApiException
-from conductor.client.orkes.orkes_workflow_client import OrkesWorkflowClient
+from conductor.client.clients.workflow_client import WorkflowClient
 from conductor.client.http.api.workflow_resource_api import WorkflowResourceApi
 from conductor.client.http.models.start_workflow_request import StartWorkflowRequest
 from conductor.client.http.models.rerun_workflow_request import RerunWorkflowRequest
@@ -20,12 +20,12 @@ WORKFLOW_UUID = 'ut_wf_uuid'
 TASK_NAME = 'ut_task'
 CORRELATION_ID= 'correlation_id'
 
-class TestOrkesWorkflowClient(unittest.TestCase):
+class TestWorkflowClient(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
         configuration = Configuration("http://localhost:8080/api")
-        cls.workflow_client = OrkesWorkflowClient(configuration)
+        cls.workflow_client = WorkflowClient(configuration)
         
     def setUp(self):
         self.input = {"a": "test"}

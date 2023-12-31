@@ -2,13 +2,13 @@ import json
 from shortuuid import uuid
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.api_client import ApiClient
-from conductor.client.orkes_clients import OrkesClients
+from conductor.client.conductor_clients import ConductorClients
 from conductor.client.workflow.conductor_workflow import ConductorWorkflow
 from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
 from conductor.client.workflow.task.simple_task import SimpleTask
-from conductor.client.orkes.models.access_type import AccessType
-from conductor.client.orkes.models.access_key_status import AccessKeyStatus
-from conductor.client.orkes.models.metadata_tag import MetadataTag
+from conductor.client.clients.models.access_type import AccessType
+from conductor.client.clients.models.access_key_status import AccessKeyStatus
+from conductor.client.clients.models.metadata_tag import MetadataTag
 from conductor.client.http.models.task_def import TaskDef
 from conductor.client.http.models.task_result import TaskResult
 from conductor.client.http.models.workflow_def import WorkflowDef
@@ -24,28 +24,28 @@ from conductor.client.http.models.workflow_test_request import WorkflowTestReque
 from conductor.client.exceptions.api_error import APIError, APIErrorCode
 
 SUFFIX = str(uuid())
-WORKFLOW_NAME = 'IntegrationTestOrkesClientsWf_' + SUFFIX
-TASK_TYPE = 'IntegrationTestOrkesClientsTask_' + SUFFIX
+WORKFLOW_NAME = 'IntegrationTestClientsWf_' + SUFFIX
+TASK_TYPE = 'IntegrationTestClientsTask_' + SUFFIX
 SCHEDULE_NAME = 'IntegrationTestSchedulerClientSch_' + SUFFIX
 SECRET_NAME = 'IntegrationTestSecretClientSec_' + SUFFIX
 APPLICATION_NAME = 'IntegrationTestAuthClientApp_' + SUFFIX
-USER_ID = 'integrationtest_' + SUFFIX[0:5].lower() + "@orkes.io"
+USER_ID = 'integrationtest_' + SUFFIX[0:5].lower() + "@swiftconductor.com"
 GROUP_ID = 'integrationtest_group_' + SUFFIX[0:5].lower()
 TEST_WF_JSON = 'tests/integration/resources/test_data/calculate_loan_workflow.json'
 TEST_IP_JSON = 'tests/integration/resources/test_data/loan_workflow_input.json'
 
-class TestOrkesClients:
+class TestClients:
     def __init__(self, configuration: Configuration):
         self.api_client = ApiClient(configuration)
         self.workflow_executor = WorkflowExecutor(configuration)
 
-        orkes_clients = OrkesClients(configuration)
-        self.metadata_client = orkes_clients.getMetadataClient()
-        self.workflow_client = orkes_clients.getWorkflowClient()
-        self.task_client = orkes_clients.getTaskClient()
-        self.scheduler_client = orkes_clients.getSchedulerClient()
-        self.secret_client = orkes_clients.getSecretClient()
-        self.authorization_client = orkes_clients.getAuthorizationClient()
+        clients = ConductorClients(configuration)
+        self.metadata_client = clients.getMetadataClient()
+        self.workflow_client = clients.getWorkflowClient()
+        self.task_client = clients.getTaskClient()
+        self.scheduler_client = clients.getSchedulerClient()
+        self.secret_client = clients.getSecretClient()
+        self.authorization_client = clients.getAuthorizationClient()
         self.workflow_id = None
 
     def run(self) -> None:

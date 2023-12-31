@@ -3,15 +3,15 @@ from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.models.task import Task
 from conductor.client.http.models.task_result import TaskResult
 from conductor.client.http.models.task_exec_log import TaskExecLog
-from conductor.client.task_client import TaskClient
+from conductor.client.task_client_abc import TaskClientABC
 from conductor.client.http.models.workflow import Workflow
-from conductor.client.orkes.orkes_base_client import OrkesBaseClient
+from conductor.client.clients.base_client import BaseClient
 from conductor.client.exceptions.api_exception_handler import api_exception_handler, for_all_methods
 
 @for_all_methods(api_exception_handler, ["__init__"])
-class OrkesTaskClient(OrkesBaseClient, TaskClient):
+class TaskClient(BaseClient, TaskClientABC):
     def __init__(self, configuration: Configuration):
-        super(OrkesTaskClient, self).__init__(configuration)
+        super(TaskClient, self).__init__(configuration)
 
     def pollTask(self, taskType: str, workerId: Optional[str] = None, domain: Optional[str] = None) -> Optional[Task]:
         kwargs = {}

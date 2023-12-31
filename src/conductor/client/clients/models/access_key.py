@@ -1,5 +1,5 @@
 from typing_extensions import Self
-from conductor.client.orkes.models.access_key_status import AccessKeyStatus
+from conductor.client.clients.models.access_key_status import AccessKeyStatus
 
 class AccessKey:
     def __init__(self, id: str, status: AccessKeyStatus, created_at: int) -> Self:
