@@ -27,6 +27,7 @@ python3 -m pip install conductor-client-python
 ```
 
 #### Server Settings
+
 Everything related to server settings should be done within the `Configuration` class by setting the required parameter (when initializing an object) like this:
 
 ```python
@@ -49,6 +50,7 @@ configuration = Configuration()
 ```
 
 #### Metrics Settings (Optional)
+
 Conductor uses [Prometheus](https://prometheus.io/) to collect metrics.
 
 ```python
