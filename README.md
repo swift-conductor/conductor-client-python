@@ -3,8 +3,6 @@
 The `conductor-client-python` repository provides the client SDKs to manage:
 1. Task workers
 2. Tasks & Workflows
-3. Schedules & Secrets
-4. Role Based Access Control (RBAC)
 
 ## Task Workers
 
@@ -27,6 +25,7 @@ python3 -m pip install conductor-client-python
 ```
 
 #### Server Settings
+
 Everything related to server settings should be done within the `Configuration` class by setting the required parameter (when initializing an object) like this:
 
 ```python
@@ -49,6 +48,7 @@ configuration = Configuration()
 ```
 
 #### Metrics Settings (Optional)
+
 Conductor uses [Prometheus](https://prometheus.io/) to collect metrics.
 
 ```python
@@ -94,18 +94,3 @@ You can [unit test your conductor workflows on a remote server before running th
 
 You can [handle errors returned from any of the Python Client SDK methods](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/exceptions).
 
-## Schedules & Secrets
-
-### Schedule Management
-
-You can [manage schedules using code](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/schedule).
-
-### Secret Management
-
-You can [manage secrets using code](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/secret).
-
-## Role Based Access Control (RBAC)
-
-### Access Control Management
-
-You can [manage applications, users, groups and permissions using code](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/authorization).

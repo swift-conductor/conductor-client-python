@@ -73,7 +73,6 @@ class ApiClient(object):
         )
 
         self.cookie = cookie
-        self.__refresh_auth_token()
 
     def __call_api(
             self, resource_path, method, path_params=None,
@@ -118,13 +117,6 @@ class ApiClient(object):
             post_params = self.sanitize_for_serialization(post_params)
             post_params = self.parameters_to_tuples(post_params,
                                                     collection_formats)
-
-        # auth setting
-        self.update_params_for_auth(
-            header_params,
-            query_params,
-            self.__get_authentication_headers()
-        )
 
         # body
         if body:
@@ -481,22 +473,6 @@ class ApiClient(object):
         else:
             return content_types[0]
 
-    def update_params_for_auth(self, headers, querys, auth_settings):
-        """Updates header and query params based on authentication setting.
-
-        :param headers: Header parameters dict to be updated.
-        :param querys: Query parameters tuple list to be updated.
-        :param auth_settings: Authentication setting identifiers list.
-        """
-        if not auth_settings:
-            return
-
-        if 'header' in auth_settings:
-            for key, value in auth_settings['header'].items():
-                headers[key] = value
-        if 'query' in auth_settings:
-            for key, value in auth_settings['query'].items():
-                querys[key] = value
 
     def __deserialize_file(self, response):
         """Deserializes body to file
@@ -629,43 +605,6 @@ class ApiClient(object):
                 instance = self.__deserialize(data, klass_name)
         return instance
 
-    def __get_authentication_headers(self):
-        if self.configuration.AUTH_TOKEN is None:
-            return None
-        return {
-            'header': {
-                'X-Authorization': self.configuration.AUTH_TOKEN
-            }
-        }
-
-    def __refresh_auth_token(self) -> None:
-        if self.configuration.AUTH_TOKEN != None:
-            return
-        if self.configuration.authentication_settings == None:
-            return
-        token = self.__get_new_token()
-        self.configuration.update_token(token)
-
-    def __get_new_token(self) -> str:
-        try:
-            response = self.call_api(
-                '/token', 'POST',
-                header_params={
-                    'Content-Type': self.select_header_content_type(['*/*'])
-                },
-                body={
-                    'keyId': self.configuration.authentication_settings.key_id,
-                    'keySecret': self.configuration.authentication_settings.key_secret
-                },
-                _return_http_data_only=True,
-                response_type='Token'
-            )
-            return response.token
-        except Exception:
-            logger.debug(
-                f'Failed to get new token, reason: {traceback.format_exc()}'
-            )
-            return None
 
     def __get_default_headers(self, header_name: str, header_value: object) -> Dict[str, object]:
         headers = {

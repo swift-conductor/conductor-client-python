@@ -8,18 +8,16 @@ In order to define a workflow, you must provide a `MetadataClient` and a `Workfl
 
 ```python
 from conductor.client.configuration.configuration import Configuration
-from conductor.client.configuration.settings.authentication_settings import AuthenticationSettings
-from conductor.client.orkes.orkes_metadata_client import OrkesMetadataClie
+from conductor.client.clients.metadata_client import MetadataClie
 from conductor.client.workflow.conductor_workflow import ConductorWorkflow
 from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
 
 configuration = Configuration(
     server_api_url=SERVER_API_URL,
-    debug=False,
-    authentication_settings=AuthenticationSettings(key_id=KEY_ID, key_secret=KEY_SECRET)
+    debug=False
 )
 
-metadata_client = OrkesMetadataClient(configuration)
+metadata_client = MetadataClient(configuration)
 
 workflow_executor = WorkflowExecutor(configuration)
 workflow = ConductorWorkflow(
@@ -134,119 +132,3 @@ You should be able to unregister your task at the Conductor Server:
 metadata_client.unregisterTaskDef('python_task_example_from_code')
 ```
 
-## Tag Management
-
-### Set tags on your workflow
-
-You should be able to set tags on your workflow:
-
-```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
-
-tags = [
-    MetadataTag("wftag1", "val1"),
-    MetadataTag("wftag2", "val2")
-]
-
-metadata_client.setWorkflowTags(tags, 'python_workflow_example_from_code')
-```
-
-### Add single tag to your workflow
-
-You should be able to add a single tag to your workflow:
-
-```python
-tag = MetadataTag("wftag", "val")
-metadata_client.addWorkflowTag(tag, 'python_workflow_example_from_code')
-```
-
-### Fetch tags added to your workflow
-
-You should be able to fetch tags added to your workflow:
-
-```python
-tags = metadata_client.getWorkflowTags('python_workflow_example_from_code')
-```
-
-### Delete tag from your workflow
-
-You should be able to delete a tag on your workflow:
-
-```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
-
-tag = MetadataTag("wftag2", "val2")
-metadata_client.deleteWorkflowTag(tag, 'python_workflow_example_from_code')
-```
-
-### Add tags to your task
-
-You should be able to set tags for your task:
-
-```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
-
-tags = [
-    MetadataTag("tag2", "val2"),
-    MetadataTag("tag3", "val3")
-]
-
-metadata_client.setTaskTags(tags, 'PYTHON_TASK')
-```
-setTaskTags will override any previously added tags.
-
-### Add single tag to your task
-
-You should be able to add a tag to your task:
-
-```python
-metadata_client.addTaskTag(MetadataTag("tag1", "val1"), 'PYTHON_TASK')
-```
-
-### Get tags added to your task
-
-You should be able to fetch tags added to your workflow:
-
-```python
-tags = metadata_client.getTaskTags('PYTHON_TASK')
-```
-
-### Delete tag from your task
-
-You should be able to delete a tag on your task:
-
-```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
-
-tag = MetadataTag("tag1", "val1"),
-metadata_client.deleteTaskTag(tag, 'PYTHON_TASK')
-```
-
-## Rate Limit Management
-
-### Set rate limit for your workflow
-
-You should be able to add a rate limit to your workflow:
-
-```python
-metadata_client.setWorkflowRateLimit(5, 'python_workflow_example_from_code')
-```
-
-Here the execution limit is set as 5, which means that no more than 5 workflows will be allowed to execute at any given time.
-
-### Get rate limit added to your workflow
-
-You should be able to retrieve the rate limit that was set for your workflow previously:
-
-```python
-rate_limit = metadata_client.getWorkflowRateLimit('python_workflow_example_from_code')
-```
-
-### Remove the rate limit on your workflow
-
-You should be able to remove the rate limit on your workflow:
-
-```python
-from conductor.client.orkes.models.metadata_tag import MetadataTag
-
-metadata_client.removeWorkflowRateLimit('python_workflow_example_from_code')

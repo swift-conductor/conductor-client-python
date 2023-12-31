@@ -1,3 +1,5 @@
+from typing import List
+
 from conductor.client.http.models import TaskDef
 from conductor.client.http.models.start_workflow_request import StartWorkflowRequest
 from conductor.client.workflow.conductor_workflow import ConductorWorkflow
@@ -23,7 +25,7 @@ def run_workflow_definition_tests(workflow_executor: WorkflowExecutor) -> None:
     test_kitchensink_workflow_registration(workflow_executor)
 
 
-def generate_tasks_defs() -> list[TaskDef]:
+def generate_tasks_defs() -> List[TaskDef]:
     python_simple_task_from_code = TaskDef(
         description="desc python_simple_task_from_code",
         owner_app="python_integration_test_app",
@@ -173,7 +175,7 @@ def generate_dynamic_fork_task() -> DynamicForkTask:
 def generate_http_task(task_ref_name='http_task') -> HttpTask:
     return HttpTask(
         task_ref_name, HttpInput(
-            uri="https://orkes-api-tester.orkesconductor.com/get"
+            uri="https://swiftconductor.com"
         ),
     )
 

@@ -1,3 +1,7 @@
+import logging
+from time import sleep
+from multiprocessing import set_start_method
+
 from conductor.client.automator.task_handler import TaskHandler
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.models import StartWorkflowRequest
@@ -7,10 +11,8 @@ from conductor.client.worker.worker import Worker
 from conductor.client.workflow.conductor_workflow import ConductorWorkflow
 from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
 from conductor.client.workflow.task.simple_task import SimpleTask
+
 from resources.worker.python.python_worker import *
-from time import sleep
-from multiprocessing import set_start_method
-import logging
 
 WORKFLOW_NAME = "sdk_python_integration_test_workflow"
 WORKFLOW_DESCRIPTION= "Python SDK Integration Test"
