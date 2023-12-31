@@ -1,10 +1,7 @@
 {
     "python.testing.unittestArgs": [
-        "-v",
-        "-s",
-        "./tests",
-        "-p",
-        "test_*.py"
+        "--verbose", 
+        "--start-directory", "./tests/unit"
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.unittestEnabled": true

@@ -6,15 +6,18 @@ You can unit test your workflow on a remote server by using the testWorkflow met
 A sample unit test code snippet is provided below.
 
 ### Sample Workflow JSON
+
 [calculate_loan_workflow.json](../../tests/integration/resources/test_data/calculate_loan_workflow.json)
+
 ### Sample Task Input / Output
+
 [loan_workflow_input.json](../../tests/integration/resources/test_data/loan_workflow_input.json)
 
 ### Sample Unit Test
 
 ```python
 import json
-from conductor.client.configuration.settings.authentication_settings import AuthenticationSettings
+
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.models.workflow_test_request import WorkflowTestRequest
 from conductor.client.clients.workflow_client import WorkflowClient
@@ -22,8 +25,7 @@ from conductor.client.clients.workflow_client import WorkflowClient
 TEST_WF_JSON_PATH = 'tests/integration/resources/test_data/calculate_loan_workflow.json'
 TEST_IP_JSON_PATH = 'tests/integration/resources/test_data/loan_workflow_input.json'
 
-auth = AuthenticationSettings(key_id=KEY_ID, key_secret=KEY_SECRET)
-config = Configuration(server_api_url=SERVER_API_URL, authentication_settings=auth)
+config = Configuration(server_api_url=SERVER_API_URL)
 api_client = ApiClient(configuration)
 workflow_client = WorkflowClient(configuration)
 

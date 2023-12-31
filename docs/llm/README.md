@@ -4,7 +4,6 @@
 from conductor.client.workflow.conductor_workflow import ConductorWorkflow
 from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
 from conductor.client.configuration.configuration import Configuration
-from conductor.client.configuration.settings.authentication_settings import AuthenticationSettings
 from conductor.client.workflow.task.llm_tasks.llm_text_complete import LlmTextComplete
 from conductor.client.workflow.task.llm_tasks.llm_index_text import LlmIndexText
 from conductor.client.workflow.task.llm_tasks.llm_generate_embeddings import LlmGenerateEmbeddings

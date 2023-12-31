@@ -10,8 +10,8 @@ echo "Python ..."
 # Do not install Python if in Anaconda environment or we are on Docker container
 if [[ -z "$CONDA_DEFAULT_ENV" && ! -f /.dockerenv ]]
 then
-    # install Python 3.8.0 if not installed
-    pyenv install 3.8.0 --skip-existing
+    # install Python 3.11 if not installed
+    pyenv install 3.11 --skip-existing
     pyenv versions
 
     # use Python 3 from .python-version for local development

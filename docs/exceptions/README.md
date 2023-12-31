@@ -19,14 +19,12 @@ This is the exception that is thrown when an Conductor Client related SDK API me
 
 ```python
 from conductor.client.exceptions.api_error import APIError, APIErrorCode
-from conductor.client.configuration.settings.authentication_settings import AuthenticationSettings
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.clients.metadata_client import MetadataClient
 
 WORKFLOW_NAME = 'test_workflow'
 
-auth = AuthenticationSettings(key_id=KEY_ID, key_secret=KEY_SECRET)
-config = Configuration(server_api_url=SERVER_API_URL, authentication_settings=auth)
+config = Configuration(server_api_url=SERVER_API_URL)
 metadata_client = MetadataClient(config)
 
 try:

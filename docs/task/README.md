@@ -5,13 +5,11 @@
 ### Initialization
 ```python
 from conductor.client.configuration.configuration import Configuration
-from conductor.client.configuration.settings.authentication_settings import AuthenticationSettings
 from conductor.client.clients.task_client import TaskClient
 
 configuration = Configuration(
     server_api_url=SERVER_API_URL,
-    debug=False,
-    authentication_settings=AuthenticationSettings(key_id=KEY_ID, key_secret=KEY_SECRET)
+    debug=False
 )
 
 task_client = TaskClient(configuration)

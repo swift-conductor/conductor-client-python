@@ -1,6 +1,6 @@
 ARG SDK_ORIGIN=local_sdk
 
-FROM python:3.8-alpine as python_base
+FROM python:3.11-alpine as python_base
 RUN apk add --no-cache tk
 RUN mkdir /package
 COPY /src /package/src
@@ -28,11 +28,7 @@ FROM python_test_base as unit_test
 RUN python3 -m unittest discover --verbose --start-directory=./tests/unit
 
 FROM python_test_base as test
-ARG KEY
-ARG SECRET
 ARG CONDUCTOR_SERVER_URL
-ENV KEY=${KEY}
-ENV SECRET=${SECRET}
 ENV CONDUCTOR_SERVER_URL=${CONDUCTOR_SERVER_URL}
 RUN python3 /package/tests/integration/main.py
 

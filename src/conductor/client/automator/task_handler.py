@@ -190,8 +190,7 @@ def __get_annotated_workers_from_subtree(pkg):
                         if worker:
                             workers.append(worker)
                     except Exception as e:
-                        logger.debug(
-                            f'Failed to create worker from function: {node.name}. Reason: {str(e)}')
+                        # logger.debug(f'Failed to create worker from function: {node.name}. Reason: {str(e)}')
                         continue
     return workers
 
@@ -225,7 +224,7 @@ def __create_worker_from_ast_node(node, params):
     auxiliar_node.decorator_list = []
     function_source_code = ast.unparse(auxiliar_node)
     exec(function_source_code)
-    execute_function = locals()[node.name]
+    execute_function = list(locals()[node.name])
     params['execute_function'] = execute_function
     worker = Worker(**params)
     return worker
