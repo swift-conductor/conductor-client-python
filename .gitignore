@@ -152,7 +152,7 @@ cython_debug/
 .idea/
 
 .DS_Store
-.idea/conductor-python.iml
+.idea/conductor-client-python.iml
 
 metrics/
 

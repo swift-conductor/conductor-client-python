@@ -18,7 +18,7 @@ RUN python3 -m pip install .
 
 FROM python_base as remote_sdk
 ARG CONDUCTOR_PYTHON_VERSION
-RUN python3 -m pip install conductor-python==${CONDUCTOR_PYTHON_VERSION}
+RUN python3 -m pip install conductor-client-python==${CONDUCTOR_PYTHON_VERSION}
 
 FROM ${SDK_ORIGIN} as python_test_base
 RUN rm -rf /package/src
