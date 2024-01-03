@@ -8,7 +8,7 @@ In order to define a workflow, you must provide a `MetadataClient` and a `Workfl
 
 ```python
 from conductor.client.configuration.configuration import Configuration
-from conductor.client.clients.metadata_client import MetadataClie
+from conductor.client.clients.metadata_client import MetadataClient
 from conductor.client.workflow.conductor_workflow import ConductorWorkflow
 from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
 
@@ -46,6 +46,7 @@ simple_task_2 = SimpleTask(
 )
 workflow >> simple_task_2
 ```
+
 You can add input parameters to your workflow:
 
 ```python
@@ -63,7 +64,7 @@ metadata_client.registerWorkflowDef(workflowDef, True)
 
 ### Get Workflow Definition
 
-You should be able to get your workflow definiton that you added previously:
+You should be able to get your workflow definition that you added previously:
 
 ```python
 wfDef = metadata_client.getWorkflowDef('python_workflow_example_from_code')
@@ -108,7 +109,7 @@ metadata_client.registerTaskDef(taskDef)
 
 ### Get Task Definition
 
-You should be able to get your task definiton that you added previously:
+You should be able to get your task definition that you added previously:
 
 ```python
 taskDef = metadata_client.getTaskDef('PYTHON_TASK')
@@ -131,4 +132,3 @@ You should be able to unregister your task at the Conductor Server:
 ```python
 metadata_client.unregisterTaskDef('python_task_example_from_code')
 ```
-

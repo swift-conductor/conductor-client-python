@@ -10,7 +10,6 @@ from conductor.client.workflow.task.simple_task import SimpleTask
 from conductor.client.http.models.task_def import TaskDef
 from conductor.client.http.models.task_result import TaskResult
 from conductor.client.http.models.workflow_def import WorkflowDef
-from conductor.client.http.models.target_ref import TargetRef, TargetType
 from conductor.client.http.models.task_result_status import TaskResultStatus
 from conductor.client.http.models.start_workflow_request import StartWorkflowRequest
 from conductor.client.http.models.workflow_test_request import WorkflowTestRequest

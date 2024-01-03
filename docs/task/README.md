@@ -3,6 +3,7 @@
 ## Task Client
 
 ### Initialization
+
 ```python
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.clients.task_client import TaskClient
@@ -16,17 +17,21 @@ task_client = TaskClient(configuration)
 ```
 
 ### Task Polling
+
 #### Poll a single task
+
 ```python
 polledTask = task_client.pollTask("TASK_TYPE")
 ```
 
 #### Batch poll tasks
+
 ```python
 batchPolledTasks = task_client.batchPollTasks("TASK_TYPE")
 ```
 
 ### Get Task
+
 ```python
 task = task_client.getTask("task_id")
 ```
@@ -34,6 +39,7 @@ task = task_client.getTask("task_id")
 ### Updating Task Status
 
 #### Update task using TaskResult object
+
 ```python
 task_result = TaskResult(
     workflow_instance_id="workflow_instance_id",
@@ -45,6 +51,7 @@ task_client.updateTask(task_result)
 ```
 
 #### Update task using task reference name
+
 ```python
 task_client.updateTaskByRefName(
     "workflow_instance_id",
@@ -55,6 +62,7 @@ task_client.updateTaskByRefName(
 ```
 
 #### Update task synchronously
+
 ```python
 task_client.updateTaskSync(
     "workflow_instance_id",
@@ -67,11 +75,13 @@ task_client.updateTaskSync(
 ### Task Log Management
 
 #### Add Task logs
+
 ```python
 task_client.addTaskLog("task_id", "Test task log!")
 ```
 
 #### Get Task logs
+
 ```python
 taskLogs = task_client.getTaskLogs("task_id")
 ```

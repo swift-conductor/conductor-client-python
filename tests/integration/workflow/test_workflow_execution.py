@@ -2,7 +2,7 @@ import logging
 from time import sleep
 from multiprocessing import set_start_method
 
-from conductor.client.automator.task_handler import TaskHandler
+from conductor.client.automation.task_handler import TaskHandler
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.models import StartWorkflowRequest
 from conductor.client.http.models import TaskDef

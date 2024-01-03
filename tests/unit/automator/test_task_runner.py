@@ -1,4 +1,4 @@
-from conductor.client.automator.task_runner import TaskRunner
+from conductor.client.automation.task_runner import TaskRunner
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.api.task_resource_api import TaskResourceApi
 from conductor.client.http.models.task import Task
