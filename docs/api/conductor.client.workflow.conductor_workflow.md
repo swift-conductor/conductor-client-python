@@ -2,7 +2,7 @@
 
 <a href="../src/conductor/client/workflow/conductor_workflow.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
-### <kbd>module</kbd> `conductor.client.workflow.conductor_workflow`
+### <kbd>module</kbd> `swift_conductor.workflow.conductor_workflow`
 
 
 
@@ -13,7 +13,7 @@
 
 <a href="../src/conductor/client/workflow/conductor_workflow.py#L11"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
-## <kbd>class</kbd> `ConductorWorkflow`
+## <kbd>class</kbd> `Workflow`
 
 
 

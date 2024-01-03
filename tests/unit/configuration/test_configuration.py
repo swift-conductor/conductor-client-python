@@ -1,6 +1,4 @@
-from conductor.client.configuration.configuration import Configuration
-from conductor.client.http.api_client import ApiClient
-import base64
+from swift_conductor.configuration import Configuration
 import unittest
 
 

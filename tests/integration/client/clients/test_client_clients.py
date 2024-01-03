@@ -1,19 +1,27 @@
 import json
 from shortuuid import uuid
 
-from conductor.client.configuration.configuration import Configuration
-from conductor.client.http.api_client import ApiClient
-from conductor.client.conductor_clients import ConductorClients
-from conductor.client.workflow.conductor_workflow import ConductorWorkflow
-from conductor.client.workflow.manager.workflow_manager import WorkflowManager
-from conductor.client.workflow.task.simple_task import SimpleTask
-from conductor.client.http.models.task_def import TaskDef
-from conductor.client.http.models.task_result import TaskResult
-from conductor.client.http.models.workflow_def import WorkflowDef
-from conductor.client.http.models.task_result_status import TaskResultStatus
-from conductor.client.http.models.start_workflow_request import StartWorkflowRequest
-from conductor.client.http.models.workflow_test_request import WorkflowTestRequest
-from conductor.client.exceptions.api_error import APIError, APIErrorCode
+from swift_conductor.configuration import Configuration
+from swift_conductor.http.api_client import ApiClient
+from swift_conductor.exceptions.api_error import APIError, APIErrorCode
+
+from swift_conductor.clients.metadata_client import MetadataClient
+from swift_conductor.clients.workflow_client import WorkflowClient
+from swift_conductor.clients.task_client import TaskClient
+
+from swift_conductor.workflow.workflow import Workflow
+from swift_conductor.workflow.workflow_manager import WorkflowManager
+
+from swift_conductor.task.simple_task import SimpleTask
+
+from swift_conductor.http.models.workflow_def import WorkflowDef
+from swift_conductor.http.models.task_def import TaskDef
+
+from swift_conductor.http.models.task_result import TaskResult
+from swift_conductor.http.models.task_result_status import TaskResultStatus
+
+from swift_conductor.http.models.start_workflow_request import StartWorkflowRequest
+from swift_conductor.http.models.workflow_test_request import WorkflowTestRequest
 
 SUFFIX = str(uuid())
 WORKFLOW_NAME = 'IntegrationTestClientsWf_' + SUFFIX
@@ -25,16 +33,18 @@ WORKFLOW_OWNER_EMAIL = "test@test"
 class TestClients:
     def __init__(self, configuration: Configuration):
         self.api_client = ApiClient(configuration)
+        
         self.workflow_manager = WorkflowManager(configuration)
 
-        clients = ConductorClients(configuration)
-        self.metadata_client = clients.getMetadataClient()
-        self.workflow_client = clients.getWorkflowClient()
-        self.task_client = clients.getTaskClient()
+        self.metadata_client = MetadataClient(configuration)
+        self.workflow_client = WorkflowClient(configuration)
+        self.task_client = TaskClient(configuration)
+
         self.workflow_id = None
 
+        
     def run(self) -> None:
-        workflow = ConductorWorkflow(
+        workflow = Workflow(
             manager=self.workflow_manager,
             name=WORKFLOW_NAME,
             description='Test Create Workflow',
@@ -65,25 +75,25 @@ class TestClients:
             input_keys=["a", "b"]
         )
 
-        self.metadata_client.registerTaskDef(taskDef)
+        self.metadata_client.register_task_def(taskDef)
 
-        taskDef = self.metadata_client.getTaskDef(TASK_TYPE)
+        taskDef = self.metadata_client.get_task_def(TASK_TYPE)
         assert taskDef.name == TASK_TYPE
         assert len(taskDef.input_keys) == 2
 
         taskDef.description = "Integration Test Task New Description"
         taskDef.input_keys = ["a", "b", "c"]
-        self.metadata_client.updateTaskDef(taskDef)
-        fetchedTaskDef = self.metadata_client.getTaskDef(taskDef.name)
+        self.metadata_client.update_task_def(taskDef)
+        fetchedTaskDef = self.metadata_client.get_task_def(taskDef.name)
         assert fetchedTaskDef.description == taskDef.description
         assert len(fetchedTaskDef.input_keys) == 3
 
         self.__test_task_tags()
         self.__test_task_execution_lifecycle()
 
-        self.metadata_client.unregisterTaskDef(TASK_TYPE)
+        self.metadata_client.unregister_task_def(TASK_TYPE)
         try:
-            self.metadata_client.getTaskDef(TASK_TYPE)
+            self.metadata_client.get_task_def(TASK_TYPE)
         except APIError as e:
             assert e.code == APIErrorCode.NOT_FOUND
             assert e.message == "Task {0} not found".format(TASK_TYPE)
@@ -94,20 +104,20 @@ class TestClients:
         self.__create_workflow_definition(workflowDef)
     
     def __create_workflow_definition(self, workflowDef) -> str:
-        return self.metadata_client.registerWorkflowDef(workflowDef, True)
+        return self.metadata_client.register_workflow_def(workflowDef, True)
 
     def __test_get_workflow_definition(self):
-        wfDef = self.metadata_client.getWorkflowDef(WORKFLOW_NAME)
+        wfDef = self.metadata_client.get_workflow_def(WORKFLOW_NAME)
         assert wfDef.name == WORKFLOW_NAME
         assert len(wfDef.tasks) == 1
 
-    def __test_update_workflow_definition(self, workflow: ConductorWorkflow):
+    def __test_update_workflow_definition(self, workflow: Workflow):
         workflow >> SimpleTask("simple_task", "simple_task_ref_2")
         workflow >> SimpleTask("simple_task", "simple_task_ref_3")
         workflow.workflow_id = self.workflow_id
         updatedWorkflowDef = workflow.to_workflow_def()
-        self.metadata_client.updateWorkflowDef(updatedWorkflowDef, True)
-        wfDef = self.metadata_client.getWorkflowDef(WORKFLOW_NAME)
+        self.metadata_client.update_workflow_def(updatedWorkflowDef, True)
+        wfDef = self.metadata_client.get_workflow_def(WORKFLOW_NAME)
         assert len(wfDef.tasks) == 3
 
     def __test_unit_test_workflow(self):
@@ -128,7 +138,7 @@ class TestClients:
         testRequest.version = workflowDef.version
         testRequest.task_ref_to_mock_output = testTaskInputs
 
-        execution = self.workflow_client.testWorkflow(testRequest)
+        execution = self.workflow_client.test_workflow(testRequest)
         assert execution != None
         
         # Ensure workflow is completed successfully
@@ -185,55 +195,55 @@ class TestClients:
         assert execution.output["phoneNumberValid"]
 
     def __test_unregister_workflow_definition(self):
-        self.metadata_client.unregisterWorkflowDef(WORKFLOW_NAME, 1)
+        self.metadata_client.unregister_workflow_def(WORKFLOW_NAME, 1)
         
         try:
-            self.metadata_client.getWorkflowDef(WORKFLOW_NAME, 1)
+            self.metadata_client.get_workflow_def(WORKFLOW_NAME, 1)
         except APIError as e:
             assert e.code == APIErrorCode.NOT_FOUND
             assert e.message ==  'No such workflow found by name: {0}, version: 1'.format(WORKFLOW_NAME)
 
     def __test_workflow_execution_lifecycle(self):
         wfInput = { "a" : 5, "b": "+", "c" : [7, 8] }
-        workflow_uuid = self.workflow_client.startWorkflowByName(WORKFLOW_NAME, wfInput)
+        workflow_uuid = self.workflow_client.start_workflow_by_name(WORKFLOW_NAME, wfInput)
         assert workflow_uuid is not None
 
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.input["a"] == 5
         assert workflow.input["b"] == "+"
         assert workflow.input["c"] == [7, 8]
         assert workflow.status == "RUNNING"
 
-        self.workflow_client.pauseWorkflow(workflow_uuid)
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        self.workflow_client.pause_workflow(workflow_uuid)
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "PAUSED"
 
         self.workflow_client.resumeWorkflow(workflow_uuid)
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "RUNNING"
 
-        self.workflow_client.terminateWorkflow(workflow_uuid, "Integration Test")
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        self.workflow_client.terminate_workflow(workflow_uuid, "Integration Test")
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "TERMINATED"
 
-        self.workflow_client.restartWorkflow(workflow_uuid)
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        self.workflow_client.restart_workflow(workflow_uuid)
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "RUNNING"
         
-        self.workflow_client.skipTaskFromWorkflow(workflow_uuid, "simple_task_ref_2")
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        self.workflow_client.skip_task_from_workflow(workflow_uuid, "simple_task_ref_2")
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "RUNNING"
 
-        self.workflow_client.deleteWorkflow(workflow_uuid)
+        self.workflow_client.delete_workflow(workflow_uuid)
         try:
-            workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+            workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         except APIError as e:
             assert e.code == APIErrorCode.NOT_FOUND
             assert e.message == "Workflow with Id: {} not found.".format(workflow_uuid)
 
     def __test_task_execution_lifecycle(self):
         
-        workflow = ConductorWorkflow(
+        workflow = Workflow(
             manager=self.workflow_manager,
             name=WORKFLOW_NAME + "_task",
             description='Test Task Client Workflow',
@@ -250,24 +260,24 @@ class TestClients:
             input={ "a" : 15, "b": 3, "op" : "+" }
         )
         
-        workflow_uuid = self.workflow_client.startWorkflow(startWorkflowRequest)
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        workflow_uuid = self.workflow_client.start_workflow(startWorkflowRequest)
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         
-        workflow_uuid_2 = self.workflow_client.startWorkflow(startWorkflowRequest)
+        workflow_uuid_2 = self.workflow_client.start_workflow(startWorkflowRequest)
         
         # First task of each workflow is in the queue
-        assert self.task_client.getQueueSizeForTask(TASK_TYPE) == 2
+        assert self.task_client.get_queue_size_for_task(TASK_TYPE) == 2
         
-        polledTask = self.task_client.pollTask(TASK_TYPE)
+        polledTask = self.task_client.poll_task(TASK_TYPE)
         assert polledTask.status == TaskResultStatus.IN_PROGRESS
         
-        self.task_client.addTaskLog(polledTask.task_id, "Polled task...")
+        self.task_client.add_task_log(polledTask.task_id, "Polled task...")
         
-        taskExecLogs = self.task_client.getTaskLogs(polledTask.task_id)
+        taskExecLogs = self.task_client.get_task_logs(polledTask.task_id)
         taskExecLogs[0].log == "Polled task..."
         
         # First task of second workflow is in the queue
-        assert self.task_client.getQueueSizeForTask(TASK_TYPE) == 1
+        assert self.task_client.get_queue_size_for_task(TASK_TYPE) == 1
         
         taskResult = TaskResult(
             workflow_instance_id=workflow_uuid,
@@ -275,17 +285,17 @@ class TestClients:
             status=TaskResultStatus.COMPLETED
         )
         
-        self.task_client.updateTask(taskResult)
+        self.task_client.update_task(taskResult)
         
-        task = self.task_client.getTask(polledTask.task_id)
+        task = self.task_client.get_task(polledTask.task_id)
         assert task.status == TaskResultStatus.COMPLETED
         
-        batchPolledTasks = self.task_client.batchPollTasks(TASK_TYPE)
+        batchPolledTasks = self.task_client.batch_poll_tasks(TASK_TYPE)
         assert len(batchPolledTasks) == 1
 
         polledTask = batchPolledTasks[0]
         # Update first task of second workflow
-        self.task_client.updateTaskByRefName(
+        self.task_client.update_task_by_ref_name(
             workflow_uuid_2,
             polledTask.reference_task_name,
             "COMPLETED",
@@ -293,20 +303,20 @@ class TestClients:
         )
         
         # Update second task of first workflow
-        self.task_client.updateTaskByRefName(
+        self.task_client.update_task_by_ref_name(
             workflow_uuid_2, "simple_task_ref_2", "COMPLETED", "task 2 op 1st wf"
         )
         
         # # Second task of second workflow is in the queue
-        # assert self.task_client.getQueueSizeForTask(TASK_TYPE) == 1
-        polledTask = self.task_client.pollTask(TASK_TYPE)
+        # assert self.task_client.get_queue_size_for_task(TASK_TYPE) == 1
+        polledTask = self.task_client.poll_task(TASK_TYPE)
 
         # Update second task of second workflow
-        self.task_client.updateTaskSync(
+        self.task_client.update_task_sync(
             workflow_uuid, "simple_task_ref_2", "COMPLETED", "task 1 op 2nd wf"
         )
         
-        assert self.task_client.getQueueSizeForTask(TASK_TYPE) == 0
+        assert self.task_client.get_queue_size_for_task(TASK_TYPE) == 0
 
     def __get_workflow_definition(self, path):
         f = open(path, "r")

@@ -1,37 +1,37 @@
-# Swift Conductor SDK - Python
+# Swift Conductor Client SDK for Python
 
 Install:
 
 ```shell
-python3 -m pip install swift-conductor-client
+pip install swift-conductor-client
 ```
 
 ## Create Tasks and Workflows
 
-[Create task and workflow definitions](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/metadata).  
+[Create task and workflow definitions](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/metadata.md).  
 
-[Execute workflows](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/workflow).
+[Execute workflows](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/workflow.md).
 
-[Manage tasks](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/task).
+[Manage tasks](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/task.md).
 
 ## Create Task Workers
 
-[Create and run task workers](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/worker).
+[Create and run task workers](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/worker.md)
 
 ## Testing Workflows
 
-[Test your workflows](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/testing).
+[Test your workflows](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/testing.md)
 
 ### Error Handling
 
-[Handle errors returned Client SDK methods](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/exceptions).
+[Handle errors returned Client SDK methods](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/exceptions.md)
 
 ## Configuration
 
 Configure Swift Conductor API URL like this: 
 
 ```python
-from conductor.client.configuration.configuration import Configuration
+from swift_conductor.configuration import Configuration
 
 configuration = Configuration(
     server_api_url='http://localhost:8080/api',

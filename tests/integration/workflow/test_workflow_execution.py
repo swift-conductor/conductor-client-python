@@ -2,15 +2,15 @@ import logging
 from time import sleep
 from multiprocessing import set_start_method
 
-from conductor.client.automation.task_handler import TaskHandler
-from conductor.client.configuration.configuration import Configuration
-from conductor.client.http.models import StartWorkflowRequest
-from conductor.client.http.models import TaskDef
-from conductor.client.worker.worker import ExecuteTaskFunction
-from conductor.client.worker.worker import Worker
-from conductor.client.workflow.conductor_workflow import ConductorWorkflow
-from conductor.client.workflow.manager.workflow_manager import WorkflowManager
-from conductor.client.workflow.task.simple_task import SimpleTask
+from swift_conductor.automation.task_handler import TaskHandler
+from swift_conductor.configuration import Configuration
+from swift_conductor.http.models import StartWorkflowRequest
+from swift_conductor.http.models import TaskDef
+from swift_conductor.worker.worker import ExecuteTaskFunction
+from swift_conductor.worker.worker import Worker
+from swift_conductor.workflow.workflow import Workflow
+from swift_conductor.workflow.workflow_manager import WorkflowManager
+from swift_conductor.task.simple_task import SimpleTask
 
 from resources.worker.python.python_worker import *
 
@@ -165,8 +165,8 @@ def test_workflow_execution(
         )
 
 
-def generate_workflow(workflow_manager: WorkflowManager, workflow_name: str = WORKFLOW_NAME, task_name: str = TASK_NAME) -> ConductorWorkflow:
-    return ConductorWorkflow(
+def generate_workflow(workflow_manager: WorkflowManager, workflow_name: str = WORKFLOW_NAME, task_name: str = TASK_NAME) -> Workflow:
+    return Workflow(
         manager=workflow_manager,
         name=workflow_name,
         description=WORKFLOW_DESCRIPTION,
