@@ -1,9 +1,9 @@
-# Swift Conductor SDK - Python
+# Swift Conductor Client SDK for Python
 
 Install:
 
 ```shell
-python3 -m pip install swift-conductor-client
+pip install swift-conductor-client
 ```
 
 ## Create Tasks and Workflows
@@ -16,15 +16,15 @@ python3 -m pip install swift-conductor-client
 
 ## Create Task Workers
 
-[Create and run task workers](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/worker.md).
+[Create and run task workers](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/worker.md)
 
 ## Testing Workflows
 
-[Test your workflows](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/testing.md).
+[Test your workflows](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/testing.md)
 
 ### Error Handling
 
-[Handle errors returned Client SDK methods](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/exceptions.md).
+[Handle errors returned Client SDK methods](https://github.com/swift-conductor/conductor-client-python/tree/main/docs/exceptions.md)
 
 ## Configuration
 
