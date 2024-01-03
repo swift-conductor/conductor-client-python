@@ -1,20 +1,20 @@
 from typing import List
 
-from conductor.client.http.models import TaskDef
-from conductor.client.http.models.start_workflow_request import StartWorkflowRequest
-from conductor.client.workflow.conductor_workflow import ConductorWorkflow
-from conductor.client.workflow.manager.workflow_manager import WorkflowManager
-from conductor.client.workflow.task.do_while_task import LoopTask
-from conductor.client.workflow.task.dynamic_fork_task import DynamicForkTask
-from conductor.client.workflow.task.fork_task import ForkTask
-from conductor.client.workflow.task.http_task import HttpTask, HttpInput
-from conductor.client.workflow.task.join_task import JoinTask
-from conductor.client.workflow.task.json_jq_task import JsonJQTask
-from conductor.client.workflow.task.set_variable_task import SetVariableTask
-from conductor.client.workflow.task.simple_task import SimpleTask
-from conductor.client.workflow.task.sub_workflow_task import SubWorkflowTask, InlineSubWorkflowTask
-from conductor.client.workflow.task.switch_task import SwitchTask
-from conductor.client.workflow.task.terminate_task import TerminateTask, WorkflowStatus
+from swift_conductor.http.models import TaskDef
+from swift_conductor.http.models.start_workflow_request import StartWorkflowRequest
+from swift_conductor.workflow.workflow import Workflow
+from swift_conductor.workflow.workflow_manager import WorkflowManager
+from swift_conductor.task.do_while_task import LoopTask
+from swift_conductor.task.dynamic_fork_task import DynamicForkTask
+from swift_conductor.task.fork_task import ForkTask
+from swift_conductor.task.http_task import HttpTask, HttpInput
+from swift_conductor.task.join_task import JoinTask
+from swift_conductor.task.json_jq_task import JsonJQTask
+from swift_conductor.task.set_variable_task import SetVariableTask
+from swift_conductor.task.simple_task import SimpleTask
+from swift_conductor.task.sub_workflow_task import SubWorkflowTask, InlineSubWorkflowTask
+from swift_conductor.task.switch_task import SwitchTask
+from swift_conductor.task.terminate_task import TerminateTask, WorkflowStatus
 
 WORKFLOW_NAME = 'python_test_workflow'
 TASK_NAME = 'python_test_simple_task'
@@ -80,7 +80,7 @@ def generate_simple_task(id: int) -> SimpleTask:
 def generate_sub_workflow_inline_task(workflow_manager: WorkflowManager) -> InlineSubWorkflowTask:
     return InlineSubWorkflowTask(
         task_ref_name='python_sub_flow_inline_from_code',
-        workflow=ConductorWorkflow(
+        workflow=Workflow(
             manager=workflow_manager,
             name='python_simple_workflow'
         ).add(
@@ -191,9 +191,9 @@ def generate_json_jq_task() -> JsonJQTask:
     )
 
 
-def generate_sub_workflow(workflow_manager: WorkflowManager) -> ConductorWorkflow:
+def generate_sub_workflow(workflow_manager: WorkflowManager) -> Workflow:
     workflow = (
-        ConductorWorkflow(
+        Workflow(
             manager=workflow_manager,
             name="PopulationMinMax",
             description="Python workflow example from code",
@@ -205,10 +205,10 @@ def generate_sub_workflow(workflow_manager: WorkflowManager) -> ConductorWorkflo
     return workflow
 
 
-def generate_workflow(workflow_manager: WorkflowManager) -> ConductorWorkflow:
+def generate_workflow(workflow_manager: WorkflowManager) -> Workflow:
     fork_task = generate_fork_task(workflow_manager)
     
-    workflow = ConductorWorkflow(
+    workflow = Workflow(
         manager=workflow_manager,
         name='test-python-sdk-workflow-as-code',
         description='Python workflow example from code',

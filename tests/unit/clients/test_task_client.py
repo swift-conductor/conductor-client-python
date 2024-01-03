@@ -4,17 +4,17 @@ import json
 
 from unittest.mock import Mock, patch, MagicMock
 
-from conductor.client.clients.task_client import TaskClient
-from conductor.client.configuration.configuration import Configuration
-from conductor.client.http.models.task import Task
-from conductor.client.http.rest import ApiException
-from conductor.client.http.api.task_resource_api import TaskResourceApi
-from conductor.client.workflow.task.task_type import TaskType
-from conductor.client.http.models.task_exec_log import TaskExecLog
-from conductor.client.http.models.task_result import TaskResult
-from conductor.client.http.models.task_result_status import TaskResultStatus
-from conductor.client.http.models.workflow import Workflow
-from conductor.client.exceptions.api_error import APIError
+from swift_conductor.clients.task_client import TaskClient
+from swift_conductor.configuration import Configuration
+from swift_conductor.http.models.task import Task
+from swift_conductor.http.rest import ApiException
+from swift_conductor.http.api.task_resource_api import TaskResourceApi
+from swift_conductor.task.task_type import TaskType
+from swift_conductor.http.models.task_exec_log import TaskExecLog
+from swift_conductor.http.models.task_result import TaskResult
+from swift_conductor.http.models.task_result_status import TaskResultStatus
+from swift_conductor.http.models.workflow import Workflow
+from swift_conductor.exceptions.api_error import APIError
 
 TASK_NAME = 'ut_task'
 TASK_ID = 'task_id_1'

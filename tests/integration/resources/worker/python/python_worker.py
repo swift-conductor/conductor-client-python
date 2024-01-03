@@ -1,8 +1,8 @@
-from conductor.client.http.models.task import Task
-from conductor.client.http.models.task_result import TaskResult
-from conductor.client.http.models.task_result_status import TaskResultStatus
-from conductor.client.worker.worker_interface import WorkerInterface
-from conductor.client.worker.worker_task import WorkerTask
+from swift_conductor.http.models.task import Task
+from swift_conductor.http.models.task_result import TaskResult
+from swift_conductor.http.models.task_result_status import TaskResultStatus
+from swift_conductor.worker.worker_interface import WorkerInterface
+from swift_conductor.worker.worker_task import WorkerTask
 
 
 class FaultyExecutionWorker(WorkerInterface):

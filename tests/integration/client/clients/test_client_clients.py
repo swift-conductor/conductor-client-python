@@ -1,19 +1,27 @@
 import json
 from shortuuid import uuid
 
-from conductor.client.configuration.configuration import Configuration
-from conductor.client.http.api_client import ApiClient
-from conductor.client.conductor_clients import ConductorClients
-from conductor.client.workflow.conductor_workflow import ConductorWorkflow
-from conductor.client.workflow.manager.workflow_manager import WorkflowManager
-from conductor.client.workflow.task.simple_task import SimpleTask
-from conductor.client.http.models.task_def import TaskDef
-from conductor.client.http.models.task_result import TaskResult
-from conductor.client.http.models.workflow_def import WorkflowDef
-from conductor.client.http.models.task_result_status import TaskResultStatus
-from conductor.client.http.models.start_workflow_request import StartWorkflowRequest
-from conductor.client.http.models.workflow_test_request import WorkflowTestRequest
-from conductor.client.exceptions.api_error import APIError, APIErrorCode
+from swift_conductor.configuration import Configuration
+from swift_conductor.http.api_client import ApiClient
+from swift_conductor.exceptions.api_error import APIError, APIErrorCode
+
+from swift_conductor.clients.metadata_client import MetadataClient
+from swift_conductor.clients.workflow_client import WorkflowClient
+from swift_conductor.clients.task_client import TaskClient
+
+from swift_conductor.workflow.workflow import Workflow
+from swift_conductor.workflow.workflow_manager import WorkflowManager
+
+from swift_conductor.task.simple_task import SimpleTask
+
+from swift_conductor.http.models.workflow_def import WorkflowDef
+from swift_conductor.http.models.task_def import TaskDef
+
+from swift_conductor.http.models.task_result import TaskResult
+from swift_conductor.http.models.task_result_status import TaskResultStatus
+
+from swift_conductor.http.models.start_workflow_request import StartWorkflowRequest
+from swift_conductor.http.models.workflow_test_request import WorkflowTestRequest
 
 SUFFIX = str(uuid())
 WORKFLOW_NAME = 'IntegrationTestClientsWf_' + SUFFIX
@@ -25,16 +33,18 @@ WORKFLOW_OWNER_EMAIL = "test@test"
 class TestClients:
     def __init__(self, configuration: Configuration):
         self.api_client = ApiClient(configuration)
+        
         self.workflow_manager = WorkflowManager(configuration)
 
-        clients = ConductorClients(configuration)
-        self.metadata_client = clients.getMetadataClient()
-        self.workflow_client = clients.getWorkflowClient()
-        self.task_client = clients.getTaskClient()
+        self.metadata_client = MetadataClient(configuration)
+        self.workflow_client = WorkflowClient(configuration)
+        self.task_client = TaskClient(configuration)
+
         self.workflow_id = None
 
+        
     def run(self) -> None:
-        workflow = ConductorWorkflow(
+        workflow = Workflow(
             manager=self.workflow_manager,
             name=WORKFLOW_NAME,
             description='Test Create Workflow',
@@ -65,25 +75,25 @@ class TestClients:
             input_keys=["a", "b"]
         )
 
-        self.metadata_client.registerTaskDef(taskDef)
+        self.metadata_client.register_task_def(taskDef)
 
-        taskDef = self.metadata_client.getTaskDef(TASK_TYPE)
+        taskDef = self.metadata_client.get_task_def(TASK_TYPE)
         assert taskDef.name == TASK_TYPE
         assert len(taskDef.input_keys) == 2
 
         taskDef.description = "Integration Test Task New Description"
         taskDef.input_keys = ["a", "b", "c"]
-        self.metadata_client.updateTaskDef(taskDef)
-        fetchedTaskDef = self.metadata_client.getTaskDef(taskDef.name)
+        self.metadata_client.update_task_def(taskDef)
+        fetchedTaskDef = self.metadata_client.get_task_def(taskDef.name)
         assert fetchedTaskDef.description == taskDef.description
         assert len(fetchedTaskDef.input_keys) == 3
 
         self.__test_task_tags()
         self.__test_task_execution_lifecycle()
 
-        self.metadata_client.unregisterTaskDef(TASK_TYPE)
+        self.metadata_client.unregister_task_def(TASK_TYPE)
         try:
-            self.metadata_client.getTaskDef(TASK_TYPE)
+            self.metadata_client.get_task_def(TASK_TYPE)
         except APIError as e:
             assert e.code == APIErrorCode.NOT_FOUND
             assert e.message == "Task {0} not found".format(TASK_TYPE)
@@ -94,20 +104,20 @@ class TestClients:
         self.__create_workflow_definition(workflowDef)
     
     def __create_workflow_definition(self, workflowDef) -> str:
-        return self.metadata_client.registerWorkflowDef(workflowDef, True)
+        return self.metadata_client.register_workflow_def(workflowDef, True)
 
     def __test_get_workflow_definition(self):
-        wfDef = self.metadata_client.getWorkflowDef(WORKFLOW_NAME)
+        wfDef = self.metadata_client.get_workflow_def(WORKFLOW_NAME)
         assert wfDef.name == WORKFLOW_NAME
         assert len(wfDef.tasks) == 1
 
-    def __test_update_workflow_definition(self, workflow: ConductorWorkflow):
+    def __test_update_workflow_definition(self, workflow: Workflow):
         workflow >> SimpleTask("simple_task", "simple_task_ref_2")
         workflow >> SimpleTask("simple_task", "simple_task_ref_3")
         workflow.workflow_id = self.workflow_id
         updatedWorkflowDef = workflow.to_workflow_def()
-        self.metadata_client.updateWorkflowDef(updatedWorkflowDef, True)
-        wfDef = self.metadata_client.getWorkflowDef(WORKFLOW_NAME)
+        self.metadata_client.update_workflow_def(updatedWorkflowDef, True)
+        wfDef = self.metadata_client.get_workflow_def(WORKFLOW_NAME)
         assert len(wfDef.tasks) == 3
 
     def __test_unit_test_workflow(self):
@@ -185,10 +195,10 @@ class TestClients:
         assert execution.output["phoneNumberValid"]
 
     def __test_unregister_workflow_definition(self):
-        self.metadata_client.unregisterWorkflowDef(WORKFLOW_NAME, 1)
+        self.metadata_client.unregister_workflow_def(WORKFLOW_NAME, 1)
         
         try:
-            self.metadata_client.getWorkflowDef(WORKFLOW_NAME, 1)
+            self.metadata_client.get_workflow_def(WORKFLOW_NAME, 1)
         except APIError as e:
             assert e.code == APIErrorCode.NOT_FOUND
             assert e.message ==  'No such workflow found by name: {0}, version: 1'.format(WORKFLOW_NAME)
@@ -233,7 +243,7 @@ class TestClients:
 
     def __test_task_execution_lifecycle(self):
         
-        workflow = ConductorWorkflow(
+        workflow = Workflow(
             manager=self.workflow_manager,
             name=WORKFLOW_NAME + "_task",
             description='Test Task Client Workflow',

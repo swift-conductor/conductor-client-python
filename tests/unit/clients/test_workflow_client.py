@@ -3,17 +3,17 @@ import unittest
 import json
 
 from unittest.mock import Mock, patch, MagicMock
-from conductor.client.http.rest import ApiException
-from conductor.client.clients.workflow_client import WorkflowClient
-from conductor.client.http.api.workflow_resource_api import WorkflowResourceApi
-from conductor.client.http.models.start_workflow_request import StartWorkflowRequest
-from conductor.client.http.models.rerun_workflow_request import RerunWorkflowRequest
-from conductor.client.http.models.workflow_test_request import WorkflowTestRequest
-from conductor.client.http.models.workflow import Workflow
-from conductor.client.http.models.workflow_def import WorkflowDef
-from conductor.client.configuration.configuration import Configuration
-from conductor.client.http.models.workflow_run import WorkflowRun
-from conductor.client.exceptions.api_error import APIError
+from swift_conductor.http.rest import ApiException
+from swift_conductor.clients.workflow_client import WorkflowClient
+from swift_conductor.http.api.workflow_resource_api import WorkflowResourceApi
+from swift_conductor.http.models.start_workflow_request import StartWorkflowRequest
+from swift_conductor.http.models.rerun_workflow_request import RerunWorkflowRequest
+from swift_conductor.http.models.workflow_test_request import WorkflowTestRequest
+from swift_conductor.http.models.workflow import Workflow
+from swift_conductor.http.models.workflow_def import WorkflowDef
+from swift_conductor.configuration import Configuration
+from swift_conductor.http.models.workflow_run import WorkflowRun
+from swift_conductor.exceptions.api_error import APIError
 
 WORKFLOW_NAME = 'ut_wf'
 WORKFLOW_UUID = 'ut_wf_uuid'

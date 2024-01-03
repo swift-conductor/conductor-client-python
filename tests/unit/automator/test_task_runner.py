@@ -1,12 +1,12 @@
-from conductor.client.automation.task_runner import TaskRunner
-from conductor.client.configuration.configuration import Configuration
-from conductor.client.http.api.task_resource_api import TaskResourceApi
-from conductor.client.http.models.task import Task
-from conductor.client.http.models.task_result import TaskResult
-from conductor.client.http.models.task_result_status import TaskResultStatus
+from swift_conductor.automation.task_runner import TaskRunner
+from swift_conductor.configuration import Configuration
+from swift_conductor.http.api.task_resource_api import TaskResourceApi
+from swift_conductor.http.models.task import Task
+from swift_conductor.http.models.task_result import TaskResult
+from swift_conductor.http.models.task_result_status import TaskResultStatus
 from tests.unit.resources.workers import ClassWorker
 from tests.unit.resources.workers import FaultyExecutionWorker
-from conductor.client.worker.worker_interface import DEFAULT_POLLING_INTERVAL
+from swift_conductor.worker.worker_interface import DEFAULT_POLLING_INTERVAL
 from configparser import ConfigParser
 from unittest.mock import patch, ANY, Mock
 import os

@@ -1,4 +1,4 @@
-from conductor.client.configuration.settings.metrics_settings import MetricsSettings
+from swift_conductor.settings.metrics_settings import MetricsSettings
 import logging
 import unittest
 
