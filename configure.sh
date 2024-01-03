@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-source version.sh
-
 # get script dir
 script_dir=$( cd `dirname ${BASH_SOURCE[0]}` >/dev/null 2>&1 ; pwd -P )
 
@@ -13,9 +11,12 @@ then
     # install Python 3.11 if not installed
     pyenv install 3.11 --skip-existing
     pyenv versions
+    
+    # create .python-version
+    pyenv local 3.11
 
     # use Python 3 from .python-version for local development
-    eval "$(pyenv init -)"
+    eval "$(pyenv init -)"    
 fi
 
 # create virtual environment
@@ -27,6 +28,9 @@ source .venv/bin/activate
 # upgrade pip
 pip install --upgrade wheel
 pip install --upgrade pip
+
+# build tools
+pip install --upgrade build twine
 
 # install this as editable package
 pip install --editable .

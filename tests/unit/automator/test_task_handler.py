@@ -1,5 +1,5 @@
-from conductor.client.automator.task_handler import TaskHandler
-from conductor.client.automator.task_runner import TaskRunner
+from conductor.client.automation.task_handler import TaskHandler
+from conductor.client.automation.task_runner import TaskRunner
 from conductor.client.configuration.configuration import Configuration
 from tests.unit.resources.workers import ClassWorker
 from unittest.mock import Mock
@@ -64,7 +64,7 @@ class TestTaskHandler(unittest.TestCase):
             def get_config_file_path_mock():
                 return tf.name
 
-            with patch('conductor.client.automator.task_handler.__get_config_file_path', get_config_file_path_mock):
+            with patch('conductor.client.automation.task_handler.__get_config_file_path', get_config_file_path_mock):
                 with _get_valid_task_handler() as task_handler:
                     config = task_handler.worker_config
                     self.assertIsInstance(config, ConfigParser)

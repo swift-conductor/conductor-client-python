@@ -20,19 +20,12 @@ Currently, there are three ways of writing a Python worker:
 The function should follow this signature:
 
 ```python
-ExecuteTaskFunction = Callable[
-    [
-        Union[Task, object]
-    ],
-    Union[TaskResult, object]
-]
+ExecuteTaskFunction = Callable[[Union[Task, object]], Union[TaskResult, object]]
 ```
 
 In other words:
-* Input must be either a `Task` or an `object`
-    * If it isn't a `Task`, the assumption is - you're expecting to receive the `Task.input_data` as the object
-* Output must be either a `TaskResult` or an `object`
-    * If it isn't a `TaskResult`, the assumption is - you're expecting to use the object as the `TaskResult.output_data`
+* Input must be either a `Task` or an `object`. If it isn't a `Task`, the assumption is that you are expecting to receive the `Task.input_data` as the object
+* Output must be either a `TaskResult` or an `object`. If it isn't a `TaskResult`, the assumption is you are expecting to use the object as the `TaskResult.output_data`
 
 Quick example below:
 
@@ -77,8 +70,9 @@ class SimplePythonWorker(WorkerInterface):
 ```
 
 ### Worker as an annotation
+
 A worker can also be invoked by adding a WorkerTask decorator as shown in the below example.
-As long as the annotated worker is in any file inside the root folder of your worker application, it will be picked up by the TaskHandler, see [Run Workers](#run-workers)
+As long as the annotated worker is in any file inside the root folder of your worker application, it will be picked up by the `TaskHandler`, see [Run Workers](#run-workers)
 
 The arguments that can be passed when defining the decorated worker are:
 1. task_definition_name: The task definition name of the condcutor task that needs to be polled for.
@@ -100,7 +94,7 @@ Now you can run your workers by calling a `TaskHandler`, example:
 
 ```python
 from conductor.client.configuration.configuration import Configuration
-from conductor.client.automator.task_handler import TaskHandler
+from conductor.client.automation.task_handler import TaskHandler
 from conductor.client.worker.worker import Worker
 
 #### Add these lines if running on a mac####
@@ -134,12 +128,8 @@ with TaskHandler(workers, configuration, scan_for_annotated_workers=True) as tas
     task_handler.start_processes()
 ```
 
-If you paste the above code in a file called main.py, you can launch the workers by running:
-```shell
-python3 main.py
-```
-
 ## Task Domains
+
 Workers can be configured to start polling for work that is tagged by a task domain. See more on domains [here](https://swiftconductor.com/documentation/configuration/taskdomains.html).
 
 
@@ -151,7 +141,7 @@ def python_annotated_task(input) -> object:
     return {'message': 'python is so cool :)'}
 ```
 
-The above code would run a worker polling for task of type, *python_annotated_task*, but only for workflows that have a task to domain mapping specified with domain for this task as _cool_.
+The above code would run a worker polling for task of type, `python_annotated_task`, but only for workflows that have a task to domain mapping specified with domain for this task as `cool`.
 
 ```json
 "taskToDomain": {
@@ -163,25 +153,28 @@ The above code would run a worker polling for task of type, *python_annotated_ta
 
 ### Using Config File
 
-You can choose to pass an _worker.ini_ file for specifying worker arguments like domain and polling_interval. This allows for configuring your workers dynamically and hence provides the flexbility along with cleaner worker code. This file has to be in the same directory as the main.py of your worker application.
+You can choose to pass an `worker.ini` file for specifying worker arguments like domain and polling_interval. This allows for configuring your workers dynamically and hence provides the flexibility along with cleaner worker code. This file has to be in the same directory as the main.py of your worker application.
 
 #### Format
-```
+
+```ini
 [task_definition_name]
 domain = <domain>
 polling_interval = <polling-interval-in-ms>
 ```
 
 #### Generic Properties
-There is an option for specifying common set of properties which apply to all workers by putting them in the _DEFAULT_ section. All workers who don't have a domain or/and polling_interval specified will default to these values.
 
-```
+There is an option for specifying common set of properties which apply to all workers by putting them in the `DEFAULT` section. All workers who don't have a domain or/and polling_interval specified will default to these values.
+
+```ini
 [DEFAULT]
 domain = <domain>
 polling_interval = <polling-interval-in-ms>
 ```
 
 #### Example File
+
 ```
 [DEFAULT]
 domain = nice
@@ -199,6 +192,7 @@ polling_interval = 300
 With the presence of the above config file, you don't need to specify domain and poll_interval for any of the worker task types.
 
 ##### Without config
+
 ```python
 from conductor.client.worker.worker_task import WorkerTask
 
@@ -220,6 +214,7 @@ def python_annotated_task_4(input) -> object:
 ```
 
 ##### With config
+
 ```python
 from conductor.client.worker.worker_task import WorkerTask
 
@@ -246,6 +241,7 @@ def python_annotated_task_4(input) -> object:
 Workers can also be configured at run time by using environment variables which override configuration files as well.
 
 #### Format
+
 ```
 conductor_worker_polling_interval=<polling-interval-in-ms>
 conductor_worker_domain=<domain>
@@ -254,6 +250,7 @@ conductor_worker_<task_definition_name>_domain=<domain>
 ```
 
 #### Example
+
 ```
 conductor_worker_polling_interval=2000
 conductor_worker_domain=nice
@@ -265,8 +262,7 @@ conductor_worker_python_annotated_task_2_domain=hot
 
 ### Order of Precedence
 
-If the worker configuration is initialized using multiple mechanisms mentioned above then the following order of priority
-will be considered from highest to lowest:
+If the worker configuration is initialized using multiple mechanisms mentioned above then the following order of priority will be considered from highest to lowest:
 
 1. Environment Variables
 2. Config File
@@ -310,64 +306,6 @@ workers = [
     )
     ...
 ]
-```
-
-## C/C++ Support
-
-Python is great, but at times you need to call into native C/C++ code. 
-Here is an example how you can do that with Conductor SDK.
-
-### 1. Export your C++ functions as `extern "C"`:
-   * C++ function example (sum two integers)
-    ```cpp
-    #include <iostream>
-
-    extern "C" int32_t get_sum(const int32_t A, const int32_t B) {
-        return A + B;
-    }
-    ```
-
-### 2. Compile and share its library:
-   * C++ file name: `simple_cpp_lib.cpp`
-   * Library output name goal: `lib.so`
-    ```sh
-    g++ -c -fPIC simple_cpp_lib.cpp -o simple_cpp_lib.o
-    g++ -shared -Wl,-install_name,lib.so -o lib.so simple_cpp_lib.o
-    ```
-     
-### 3. Use the C++ library in your python worker
-
-You can use the Python library to call native code written in C++.  Here is an example that calls native C++ library
-from the Python worker.
-See [simple_cpp_lib.cpp](src/example/worker/cpp/simple_cpp_lib.cpp) 
-and [simple_cpp_worker.py](src/example/worker/cpp/simple_cpp_worker.py) for complete working example.
-
-```python
-from conductor.client.http.models.task import Task
-from conductor.client.http.models.task_result import TaskResult
-from conductor.client.http.models.task_result_status import TaskResultStatus
-from conductor.client.worker.worker_interface import WorkerInterface
-from ctypes import cdll
-
-class CppWrapper:
-    def __init__(self, file_path='./lib.so'):
-        self.cpp_lib = cdll.LoadLibrary(file_path)
-
-    def get_sum(self, X: int, Y: int) -> int:
-        return self.cpp_lib.get_sum(X, Y)
-
-
-class SimpleCppWorker(WorkerInterface):
-    cpp_wrapper = CppWrapper()
-
-    def execute(self, task: Task) -> TaskResult:
-        execution_result = self.cpp_wrapper.get_sum(1, 2)
-        task_result = self.get_task_result_from_task(task)
-        task_result.add_output_data(
-            'sum', execution_result
-        )
-        task_result.status = TaskResultStatus.COMPLETED
-        return task_result
 ```
 
 ### Next: [Create workflows using Code](../workflow/README.md)
