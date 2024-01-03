@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 from typing_extensions import Self
 import uuid
 
-class WorkflowExecutor:
+class WorkflowManager:
     def __init__(self, configuration: Configuration) -> Self:
         api_client = ApiClient(configuration)
         self.metadata_client = MetadataResourceApi(api_client)

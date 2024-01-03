@@ -24,7 +24,7 @@
 
 ```python
 __init__(
-    executor: WorkflowExecutor,
+    manager: WorkflowManager,
     name: str,
     version: int = None,
     description: str = None

@@ -9,7 +9,7 @@ from conductor.client.http.models import TaskDef
 from conductor.client.worker.worker import ExecuteTaskFunction
 from conductor.client.worker.worker import Worker
 from conductor.client.workflow.conductor_workflow import ConductorWorkflow
-from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
+from conductor.client.workflow.manager.workflow_manager import WorkflowManager
 from conductor.client.workflow.task.simple_task import SimpleTask
 
 from resources.worker.python.python_worker import *
@@ -27,7 +27,7 @@ logger = logging.getLogger(
 )
 
 
-def run_workflow_execution_tests(configuration: Configuration, workflow_executor: WorkflowExecutor):
+def run_workflow_execution_tests(configuration: Configuration, workflow_manager: WorkflowManager):
     workers=[
         ClassWorker(TASK_NAME),
         ClassWorkerWithDomain(TASK_NAME),
@@ -44,17 +44,17 @@ def run_workflow_execution_tests(configuration: Configuration, workflow_executor
     set_start_method('fork')
     task_handler.start_processes()
     try:
-        test_get_workflow_by_correlation_ids(workflow_executor)
+        test_get_workflow_by_correlation_ids(workflow_manager)
         logger.debug('finished workflow correlation ids test')
-        test_workflow_registration(workflow_executor)
+        test_workflow_registration(workflow_manager)
         logger.debug('finished workflow registration tests')
         test_workflow_execution(
             workflow_quantity=6,
             workflow_name=WORKFLOW_NAME,
-            workflow_executor=workflow_executor,
+            workflow_manager=workflow_manager,
             workflow_completion_timeout=5.0
         )
-        test_decorated_workers(workflow_executor)
+        test_decorated_workers(workflow_manager)
     except Exception as e:
         task_handler.stop_processes()
         raise Exception(f'failed integration tests, reason: {e}')
@@ -76,9 +76,9 @@ def generate_tasks_defs():
     return [python_simple_task_from_code]
 
 
-def test_get_workflow_by_correlation_ids(workflow_executor: WorkflowExecutor):
+def test_get_workflow_by_correlation_ids(workflow_manager: WorkflowManager):
     _run_with_retry_attempt(
-        workflow_executor.get_by_correlation_ids,
+        workflow_manager.get_by_correlation_ids,
         {
             'workflow_name': WORKFLOW_NAME,
             'correlation_ids': [
@@ -88,39 +88,39 @@ def test_get_workflow_by_correlation_ids(workflow_executor: WorkflowExecutor):
     )
 
 
-def test_workflow_registration(workflow_executor: WorkflowExecutor):
-    workflow = generate_workflow(workflow_executor)
+def test_workflow_registration(workflow_manager: WorkflowManager):
+    workflow = generate_workflow(workflow_manager)
     try:
-        workflow_executor.metadata_client.unregister_workflow_def_with_http_info(
+        workflow_manager.metadata_client.unregister_workflow_def_with_http_info(
             workflow.name, workflow.version
         )
     except Exception as e:
         if '404' not in str(e):
             raise e
     workflow.register(overwrite=True) == None
-    workflow_executor.register_workflow(
+    workflow_manager.register_workflow(
         workflow.to_workflow_def(), overwrite=True
     )
 
 
 def test_decorated_workers(
-        workflow_executor: WorkflowExecutor,
+        workflow_manager: WorkflowManager,
         workflow_name: str = 'TestPythonDecoratedWorkerWf',
 ) -> None:
     wf = generate_workflow(
-        workflow_executor=workflow_executor,
+        workflow_manager=workflow_manager,
         workflow_name=workflow_name,
         task_name='test_python_decorated_worker',
     )
     wf.register(True)
-    workflow_id = workflow_executor.start_workflow(StartWorkflowRequest(name=workflow_name))
+    workflow_id = workflow_manager.start_workflow(StartWorkflowRequest(name=workflow_name))
     logger.debug(f'started TestPythonDecoratedWorkerWf with id: {workflow_id}')
     
     td_map = {
         'test_python_decorated_worker': 'cool'
     }
     start_wf_req = StartWorkflowRequest(name=workflow_name, task_to_domain=td_map)
-    workflow_id_2 = workflow_executor.start_workflow(start_wf_req)
+    workflow_id_2 = workflow_manager.start_workflow(start_wf_req)
     
     logger.debug(f'started TestPythonDecoratedWorkerWf with domain:cool and id: {workflow_id_2}')
     sleep(5)
@@ -129,7 +129,7 @@ def test_decorated_workers(
         validate_workflow_status,
         {
             'workflow_id': workflow_id,
-            'workflow_executor': workflow_executor
+            'workflow_manager': workflow_manager
         }
     )
     
@@ -137,37 +137,37 @@ def test_decorated_workers(
         validate_workflow_status,
         {
             'workflow_id': workflow_id_2,
-            'workflow_executor': workflow_executor
+            'workflow_manager': workflow_manager
         }
     )
     
-    workflow_executor.metadata_client.unregister_workflow_def(wf.name, wf.version)
+    workflow_manager.metadata_client.unregister_workflow_def(wf.name, wf.version)
     
 
 def test_workflow_execution(
     workflow_quantity: int,
     workflow_name: str,
-    workflow_executor: WorkflowExecutor,
+    workflow_manager: WorkflowManager,
     workflow_completion_timeout: float,
 ) -> None:
     start_workflow_requests = [''] * workflow_quantity
     for i in range(workflow_quantity):
         start_workflow_requests[i] = StartWorkflowRequest(name=workflow_name)
-    workflow_ids = workflow_executor.start_workflows(*start_workflow_requests)
+    workflow_ids = workflow_manager.start_workflows(*start_workflow_requests)
     sleep(workflow_completion_timeout)
     for workflow_id in workflow_ids:
         _run_with_retry_attempt(
             validate_workflow_status,
             {
                 'workflow_id': workflow_id,
-                'workflow_executor': workflow_executor
+                'workflow_manager': workflow_manager
             }
         )
 
 
-def generate_workflow(workflow_executor: WorkflowExecutor, workflow_name: str = WORKFLOW_NAME, task_name: str = TASK_NAME) -> ConductorWorkflow:
+def generate_workflow(workflow_manager: WorkflowManager, workflow_name: str = WORKFLOW_NAME, task_name: str = TASK_NAME) -> ConductorWorkflow:
     return ConductorWorkflow(
-        executor=workflow_executor,
+        manager=workflow_manager,
         name=workflow_name,
         description=WORKFLOW_DESCRIPTION,
         version=WORKFLOW_VERSION,
@@ -181,8 +181,8 @@ def generate_workflow(workflow_executor: WorkflowExecutor, workflow_name: str = 
     )
 
 
-def validate_workflow_status(workflow_id: str, workflow_executor: WorkflowExecutor) -> None:
-    workflow = workflow_executor.get_workflow(
+def validate_workflow_status(workflow_id: str, workflow_manager: WorkflowManager) -> None:
+    workflow = workflow_manager.get_workflow(
         workflow_id=workflow_id,
         include_tasks=False,
     )
@@ -190,7 +190,7 @@ def validate_workflow_status(workflow_id: str, workflow_executor: WorkflowExecut
         raise Exception(
             f'workflow expected to be COMPLETED, but received {workflow.status}, workflow_id: {workflow_id}'
         )
-    workflow_status = workflow_executor.get_workflow_status(
+    workflow_status = workflow_manager.get_workflow_status(
         workflow_id=workflow_id,
         include_output=False,
         include_variables=False,

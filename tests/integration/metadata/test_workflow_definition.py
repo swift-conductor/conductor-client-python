@@ -3,7 +3,7 @@ from typing import List
 from conductor.client.http.models import TaskDef
 from conductor.client.http.models.start_workflow_request import StartWorkflowRequest
 from conductor.client.workflow.conductor_workflow import ConductorWorkflow
-from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
+from conductor.client.workflow.manager.workflow_manager import WorkflowManager
 from conductor.client.workflow.task.do_while_task import LoopTask
 from conductor.client.workflow.task.dynamic_fork_task import DynamicForkTask
 from conductor.client.workflow.task.fork_task import ForkTask
@@ -21,8 +21,8 @@ TASK_NAME = 'python_test_simple_task'
 WORKFLOW_OWNER_EMAIL = "test@test"
 
 
-def run_workflow_definition_tests(workflow_executor: WorkflowExecutor) -> None:
-    test_kitchensink_workflow_registration(workflow_executor)
+def run_workflow_definition_tests(workflow_manager: WorkflowManager) -> None:
+    test_kitchensink_workflow_registration(workflow_manager)
 
 
 def generate_tasks_defs() -> List[TaskDef]:
@@ -41,25 +41,25 @@ def generate_tasks_defs() -> List[TaskDef]:
     return [python_simple_task_from_code]
 
 
-def test_kitchensink_workflow_registration(workflow_executor: WorkflowExecutor) -> None:
-    workflow = generate_sub_workflow(workflow_executor)
+def test_kitchensink_workflow_registration(workflow_manager: WorkflowManager) -> None:
+    workflow = generate_sub_workflow(workflow_manager)
     try:
-        workflow_executor.metadata_client.unregister_workflow_def_with_http_info(
+        workflow_manager.metadata_client.unregister_workflow_def_with_http_info(
             workflow.name, workflow.version
         )
     except:
         pass
     workflow.register(True)
-    workflow = generate_workflow(workflow_executor)
-    workflow_executor.metadata_client.register_task_def(generate_tasks_defs())
+    workflow = generate_workflow(workflow_manager)
+    workflow_manager.metadata_client.register_task_def(generate_tasks_defs())
     try:
-        workflow_executor.metadata_client.unregister_workflow_def_with_http_info(
+        workflow_manager.metadata_client.unregister_workflow_def_with_http_info(
             workflow.name, workflow.version
         )
     except:
         pass
     workflow.register(True)
-    workflow_id = workflow_executor.start_workflow(
+    workflow_id = workflow_manager.start_workflow(
         start_workflow_request=StartWorkflowRequest(
             name=workflow.name
         )
@@ -67,7 +67,7 @@ def test_kitchensink_workflow_registration(workflow_executor: WorkflowExecutor) 
     if type(workflow_id) != str or workflow_id == '':
         raise Exception(f'failed to start workflow, name: {WORKFLOW_NAME}')
     
-    workflow_executor.terminate(workflow_id=workflow_id, reason="End test")
+    workflow_manager.terminate(workflow_id=workflow_id, reason="End test")
 
 
 def generate_simple_task(id: int) -> SimpleTask:
@@ -77,11 +77,11 @@ def generate_simple_task(id: int) -> SimpleTask:
     )
 
 
-def generate_sub_workflow_inline_task(workflow_executor: WorkflowExecutor) -> InlineSubWorkflowTask:
+def generate_sub_workflow_inline_task(workflow_manager: WorkflowManager) -> InlineSubWorkflowTask:
     return InlineSubWorkflowTask(
         task_ref_name='python_sub_flow_inline_from_code',
         workflow=ConductorWorkflow(
-            executor=workflow_executor,
+            manager=workflow_manager,
             name='python_simple_workflow'
         ).add(
             task=generate_simple_task(0)
@@ -125,20 +125,20 @@ def generate_do_while_task_multiple() -> LoopTask:
         tasks=[generate_simple_task(i) for i in range(13, 14)],
     )
 
-def generate_fork_task(workflow_executor: WorkflowExecutor) -> ForkTask:
+def generate_fork_task(workflow_manager: WorkflowManager) -> ForkTask:
     return ForkTask(
         task_ref_name='forked',
         forked_tasks=[
             [
                 generate_do_while_task(),
                 generate_do_while_task_multiple(),
-                generate_sub_workflow_inline_task(workflow_executor)
+                generate_sub_workflow_inline_task(workflow_manager)
             ],
             [generate_simple_task(i) for i in range(3, 5)]
         ]
     )
 
-def generate_join_task(workflow_executor: WorkflowExecutor, fork_task: ForkTask) -> JoinTask:
+def generate_join_task(workflow_manager: WorkflowManager, fork_task: ForkTask) -> JoinTask:
     return JoinTask(
         task_ref_name='join_forked',
         join_on=fork_task.to_workflow_task().join_on
@@ -191,10 +191,10 @@ def generate_json_jq_task() -> JsonJQTask:
     )
 
 
-def generate_sub_workflow(workflow_executor: WorkflowExecutor) -> ConductorWorkflow:
+def generate_sub_workflow(workflow_manager: WorkflowManager) -> ConductorWorkflow:
     workflow = (
         ConductorWorkflow(
-            executor=workflow_executor,
+            manager=workflow_manager,
             name="PopulationMinMax",
             description="Python workflow example from code",
             version=1234,
@@ -205,11 +205,11 @@ def generate_sub_workflow(workflow_executor: WorkflowExecutor) -> ConductorWorkf
     return workflow
 
 
-def generate_workflow(workflow_executor: WorkflowExecutor) -> ConductorWorkflow:
-    fork_task = generate_fork_task(workflow_executor)
+def generate_workflow(workflow_manager: WorkflowManager) -> ConductorWorkflow:
+    fork_task = generate_fork_task(workflow_manager)
     
     workflow = ConductorWorkflow(
-        executor=workflow_executor,
+        manager=workflow_manager,
         name='test-python-sdk-workflow-as-code',
         description='Python workflow example from code',
         version=1234,
@@ -222,7 +222,7 @@ def generate_workflow(workflow_executor: WorkflowExecutor) -> ConductorWorkflow:
     ).add(
         fork_task
     ).add(
-        generate_join_task(workflow_executor, fork_task)
+        generate_join_task(workflow_manager, fork_task)
     ).owner_email(WORKFLOW_OWNER_EMAIL)
 
     workflow >> generate_sub_workflow_task() >> generate_json_jq_task()

@@ -5,7 +5,7 @@ from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.api_client import ApiClient
 from conductor.client.conductor_clients import ConductorClients
 from conductor.client.workflow.conductor_workflow import ConductorWorkflow
-from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
+from conductor.client.workflow.manager.workflow_manager import WorkflowManager
 from conductor.client.workflow.task.simple_task import SimpleTask
 from conductor.client.http.models.task_def import TaskDef
 from conductor.client.http.models.task_result import TaskResult
@@ -25,7 +25,7 @@ WORKFLOW_OWNER_EMAIL = "test@test"
 class TestClients:
     def __init__(self, configuration: Configuration):
         self.api_client = ApiClient(configuration)
-        self.workflow_executor = WorkflowExecutor(configuration)
+        self.workflow_manager = WorkflowManager(configuration)
 
         clients = ConductorClients(configuration)
         self.metadata_client = clients.getMetadataClient()
@@ -35,7 +35,7 @@ class TestClients:
 
     def run(self) -> None:
         workflow = ConductorWorkflow(
-            executor=self.workflow_executor,
+            manager=self.workflow_manager,
             name=WORKFLOW_NAME,
             description='Test Create Workflow',
             version=1
@@ -234,7 +234,7 @@ class TestClients:
     def __test_task_execution_lifecycle(self):
         
         workflow = ConductorWorkflow(
-            executor=self.workflow_executor,
+            manager=self.workflow_manager,
             name=WORKFLOW_NAME + "_task",
             description='Test Task Client Workflow',
             version=1

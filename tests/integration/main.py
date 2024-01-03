@@ -1,6 +1,6 @@
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.api_client import ApiClient
-from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
+from conductor.client.workflow.manager.workflow_manager import WorkflowManager
 from metadata.test_workflow_definition import run_workflow_definition_tests
 from workflow.test_workflow_execution import run_workflow_execution_tests
 from client.clients.test_client_clients import TestClients
@@ -39,15 +39,15 @@ def generate_configuration():
 def main():
     args = sys.argv[1:]
     configuration = generate_configuration()
-    workflow_executor = WorkflowExecutor(configuration)
+    workflow_manager = WorkflowManager(configuration)
 
     if len(args) == 1 and args[0] == '--clients-only':
         TestClients(configuration=configuration).run()
     elif len(args) == 1 and args[0] == '--workflow-execution-only':
-        run_workflow_execution_tests(configuration, workflow_executor)
+        run_workflow_execution_tests(configuration, workflow_manager)
     else:
-        run_workflow_definition_tests(workflow_executor)
-        run_workflow_execution_tests(configuration, workflow_executor)
+        run_workflow_definition_tests(workflow_manager)
+        run_workflow_execution_tests(configuration, workflow_manager)
         TestClients(configuration=configuration).run()
 
 

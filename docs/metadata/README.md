@@ -4,13 +4,13 @@
 
 ### Register Workflow Definition
 
-In order to define a workflow, you must provide a `MetadataClient` and a `WorkflowExecutor`, which requires a `Configuration` object with the Conductor Server info. Here's an example on how to do that:
+In order to define a workflow, you must provide a `MetadataClient` and a `WorkflowManager`, which requires a `Configuration` object with the Conductor Server info. Here's an example on how to do that:
 
 ```python
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.clients.metadata_client import MetadataClient
 from conductor.client.workflow.conductor_workflow import ConductorWorkflow
-from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
+from conductor.client.workflow.manager.workflow_manager import WorkflowManager
 
 configuration = Configuration(
     server_api_url=SERVER_API_URL,
@@ -19,9 +19,9 @@ configuration = Configuration(
 
 metadata_client = MetadataClient(configuration)
 
-workflow_executor = WorkflowExecutor(configuration)
+workflow_manager = WorkflowManager(configuration)
 workflow = ConductorWorkflow(
-    executor=workflow_executor,
+    manager=workflow_manager,
     name='python_workflow_example_from_code',
     description='Python workflow example from code'
 )

@@ -1,6 +1,6 @@
 from conductor.client.workflow.task.fork_task import ForkTask
 from conductor.client.workflow.task.join_task import JoinTask
-from conductor.client.workflow.executor.workflow_executor import WorkflowExecutor
+from conductor.client.workflow.manager.workflow_manager import WorkflowManager
 from conductor.client.workflow.task.task import TaskInterface
 from conductor.client.workflow.task.timeout_policy import TimeoutPolicy
 from conductor.client.http.models import *
@@ -14,11 +14,11 @@ class ConductorWorkflow:
     SCHEMA_VERSION = 2
 
     def __init__(self,
-                 executor: WorkflowExecutor,
+                 manager: WorkflowManager,
                  name: str,
                  version: int = None,
                  description: str = None) -> Self:
-        self._executor = executor
+        self._manager = manager
         self.name = name
         self.version = version
         self.description = description
@@ -152,7 +152,7 @@ class ConductorWorkflow:
     # overwritten. When not set, the call fails if there is any change in the workflow definition between the server
     # and what is being registered.
     def register(self, overwrite: bool):
-        return self._executor.register_workflow(
+        return self._manager.register_workflow(
             overwrite=overwrite,
             workflow=self.to_workflow_def(),
         )
@@ -161,7 +161,7 @@ class ConductorWorkflow:
     # be registered.
     def start_workflow(self, start_workflow_request: StartWorkflowRequest):
         start_workflow_request.workflow_def = self.to_workflow_def()
-        return self._executor.start_workflow(start_workflow_request)
+        return self._manager.start_workflow(start_workflow_request)
 
     # Converts the workflow to the JSON serializable format
     def to_workflow_def(self) -> WorkflowDef:

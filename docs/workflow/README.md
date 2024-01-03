@@ -22,7 +22,7 @@ workflow_client = WorkflowClient(configuration)
 
 ```python
 workflow = ConductorWorkflow(
-    executor=self.workflow_executor,
+    manager=self.workflow_manager,
     name="WORKFLOW_NAME",
     description='Test Create Workflow',
     version=1

@@ -1,8 +1,8 @@
 <!-- markdownlint-disable -->
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
-### <kbd>module</kbd> `conductor.client.workflow.executor.workflow_executor`
+### <kbd>module</kbd> `conductor.client.workflow.manager.workflow_manager`
 
 
 
@@ -11,14 +11,14 @@
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L11"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L11"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
-## <kbd>class</kbd> `WorkflowExecutor`
-
-
+## <kbd>class</kbd> `WorkflowManager`
 
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L12"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L12"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `__init__`
 
@@ -35,7 +35,7 @@ __init__(configuration: Configuration) → Self
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L83"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L83"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `get_by_correlation_ids`
 
@@ -54,7 +54,7 @@ Lists workflows for the given correlation id list
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L210"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L210"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `get_task`
 
@@ -68,7 +68,7 @@ Get task by Id
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L40"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L40"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `get_workflow`
 
@@ -82,7 +82,7 @@ Gets the workflow by workflow id
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L49"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L49"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `get_workflow_status`
 
@@ -100,7 +100,7 @@ Gets the workflow by workflow id
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L99"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L99"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `pause`
 
@@ -114,7 +114,7 @@ Pauses the workflow
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L18"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L18"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `register_workflow`
 
@@ -128,7 +128,7 @@ Create a new workflow definition
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L155"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L155"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `rerun`
 
@@ -142,7 +142,7 @@ Reruns the workflow from a specific task
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L131"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L131"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `restart`
 
@@ -156,7 +156,7 @@ Restarts a completed workflow
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L109"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L109"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `resume`
 
@@ -170,7 +170,7 @@ Resumes the workflow
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L143"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L143"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `retry`
 
@@ -184,7 +184,7 @@ Retries the last failed task
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L63"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L63"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `search`
 
@@ -203,7 +203,7 @@ Search for workflows based on payload and other parameters
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L167"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L167"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `skip_task_from_workflow`
 
@@ -221,7 +221,7 @@ Skips a given task from a current running workflow
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L30"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L30"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `start_workflow`
 
@@ -235,7 +235,7 @@ Start a new workflow with StartWorkflowRequest, which allows task to be executed
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L119"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L119"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `terminate`
 
@@ -249,7 +249,7 @@ Terminate workflow execution
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L181"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L181"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `update_task`
 
@@ -268,7 +268,7 @@ Update a task
 
 ---
 
-<a href="../src/conductor/client/workflow/executor/workflow_executor.py#L194"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L194"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `update_task_by_ref_name`
 
