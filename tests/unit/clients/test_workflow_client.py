@@ -41,28 +41,28 @@ class TestWorkflowClient(unittest.TestCase):
     @patch.object(WorkflowResourceApi, 'start_workflow1')
     def test_startWorkflowByName(self, mock):
         mock.return_value = WORKFLOW_UUID
-        wfId = self.workflow_client.startWorkflowByName(WORKFLOW_NAME, self.input)
+        wfId = self.workflow_client.start_workflow_by_name(WORKFLOW_NAME, self.input)
         mock.assert_called_with(self.input, WORKFLOW_NAME)
         self.assertEqual(wfId, WORKFLOW_UUID)
     
     @patch.object(WorkflowResourceApi, 'start_workflow1')
     def test_startWorkflowByName_with_version(self, mock):
         mock.return_value = WORKFLOW_UUID
-        wfId = self.workflow_client.startWorkflowByName(WORKFLOW_NAME, self.input, version=1)
+        wfId = self.workflow_client.start_workflow_by_name(WORKFLOW_NAME, self.input, version=1)
         mock.assert_called_with(self.input, WORKFLOW_NAME, version=1)
         self.assertEqual(wfId, WORKFLOW_UUID)
 
     @patch.object(WorkflowResourceApi, 'start_workflow1')
     def test_startWorkflowByName_with_correlation_id(self, mock):
         mock.return_value = WORKFLOW_UUID
-        wfId = self.workflow_client.startWorkflowByName(WORKFLOW_NAME, self.input, correlationId=CORRELATION_ID)
+        wfId = self.workflow_client.start_workflow_by_name(WORKFLOW_NAME, self.input, correlationId=CORRELATION_ID)
         mock.assert_called_with(self.input, WORKFLOW_NAME, correlation_id=CORRELATION_ID)
         self.assertEqual(wfId, WORKFLOW_UUID)
     
     @patch.object(WorkflowResourceApi, 'start_workflow1')
     def test_startWorkflowByName_with_version_and_priority(self, mock):
         mock.return_value = WORKFLOW_UUID
-        wfId = self.workflow_client.startWorkflowByName(WORKFLOW_NAME, self.input, version=1, priority=1)
+        wfId = self.workflow_client.start_workflow_by_name(WORKFLOW_NAME, self.input, version=1, priority=1)
         mock.assert_called_with(self.input, WORKFLOW_NAME, version=1, priority=1)
         self.assertEqual(wfId, WORKFLOW_UUID)
         
@@ -70,7 +70,7 @@ class TestWorkflowClient(unittest.TestCase):
     def test_startWorkflow(self, mock):
         mock.return_value = WORKFLOW_UUID
         startWorkflowReq = StartWorkflowRequest()
-        wfId = self.workflow_client.startWorkflow(startWorkflowReq)
+        wfId = self.workflow_client.start_workflow(startWorkflowReq)
         mock.assert_called_with(startWorkflowReq)
         self.assertEqual(wfId, WORKFLOW_UUID)
     
@@ -79,7 +79,7 @@ class TestWorkflowClient(unittest.TestCase):
         expectedWfRun = WorkflowRun()
         mock.return_value = expectedWfRun
         startWorkflowReq = StartWorkflowRequest()
-        workflowRun = self.workflow_client.executeWorkflow(
+        workflowRun = self.workflow_client.execute_workflow(
             startWorkflowReq, "request_id", WORKFLOW_NAME, 1
         )
         mock.assert_called_with(startWorkflowReq,"request_id", WORKFLOW_NAME, 1)
@@ -87,7 +87,7 @@ class TestWorkflowClient(unittest.TestCase):
 
     @patch.object(WorkflowResourceApi, 'pause_workflow1')
     def test_pauseWorkflow(self, mock):
-        self.workflow_client.pauseWorkflow(WORKFLOW_UUID)
+        self.workflow_client.pause_workflow(WORKFLOW_UUID)
         mock.assert_called_with(WORKFLOW_UUID)
         
     @patch.object(WorkflowResourceApi, 'resume_workflow1')
@@ -97,52 +97,52 @@ class TestWorkflowClient(unittest.TestCase):
     
     @patch.object(WorkflowResourceApi, 'restart1')
     def test_restartWorkflow(self, mock):
-        self.workflow_client.restartWorkflow(WORKFLOW_UUID)
+        self.workflow_client.restart_workflow(WORKFLOW_UUID)
         mock.assert_called_with(WORKFLOW_UUID, use_latest_definitions=False)
     
     @patch.object(WorkflowResourceApi, 'restart1')
     def test_restartWorkflow_with_latest_wfDef(self, mock):
-        self.workflow_client.restartWorkflow(WORKFLOW_UUID, True)
+        self.workflow_client.restart_workflow(WORKFLOW_UUID, True)
         mock.assert_called_with(WORKFLOW_UUID, use_latest_definitions=True)
 
     @patch.object(WorkflowResourceApi, 'rerun')
     def test_rerunWorkflow(self, mock):
         reRunReq = RerunWorkflowRequest()
-        self.workflow_client.rerunWorkflow(WORKFLOW_UUID, reRunReq)
+        self.workflow_client.rerun_workflow(WORKFLOW_UUID, reRunReq)
         mock.assert_called_with(reRunReq, WORKFLOW_UUID)
     
     @patch.object(WorkflowResourceApi, 'retry1')
     def test_retryWorkflow(self, mock):
-        self.workflow_client.retryWorkflow(WORKFLOW_UUID)
+        self.workflow_client.retry_workflow(WORKFLOW_UUID)
         mock.assert_called_with(WORKFLOW_UUID, resume_subworkflow_tasks=False)
 
     @patch.object(WorkflowResourceApi, 'retry1')
     def test_retryWorkflow_with_resumeSubworkflowTasks(self, mock):
-        self.workflow_client.retryWorkflow(WORKFLOW_UUID, True)
+        self.workflow_client.retry_workflow(WORKFLOW_UUID, True)
         mock.assert_called_with(WORKFLOW_UUID, resume_subworkflow_tasks=True)
 
     @patch.object(WorkflowResourceApi, 'terminate1')
     def test_terminateWorkflow(self, mock):
-        self.workflow_client.terminateWorkflow(WORKFLOW_UUID)
+        self.workflow_client.terminate_workflow(WORKFLOW_UUID)
         mock.assert_called_with(WORKFLOW_UUID)
         
     @patch.object(WorkflowResourceApi, 'terminate1')
     def test_terminateWorkflow_with_reason(self, mock):
         reason = "Unit test failed"
-        self.workflow_client.terminateWorkflow(WORKFLOW_UUID, reason)
+        self.workflow_client.terminate_workflow(WORKFLOW_UUID, reason)
         mock.assert_called_with(WORKFLOW_UUID, reason=reason)
     
     @patch.object(WorkflowResourceApi, 'get_execution_status')
     def test_getWorkflow(self, mock):
         mock.return_value = Workflow(workflow_id=WORKFLOW_UUID)
-        workflow = self.workflow_client.getWorkflow(WORKFLOW_UUID)
+        workflow = self.workflow_client.get_workflow(WORKFLOW_UUID)
         mock.assert_called_with(WORKFLOW_UUID, include_tasks=True)
         self.assertEqual(workflow.workflow_id, WORKFLOW_UUID)
 
     @patch.object(WorkflowResourceApi, 'get_execution_status')
     def test_getWorkflow_without_tasks(self, mock):
         mock.return_value = Workflow(workflow_id=WORKFLOW_UUID)
-        workflow = self.workflow_client.getWorkflow(WORKFLOW_UUID, False)
+        workflow = self.workflow_client.get_workflow(WORKFLOW_UUID, False)
         mock.assert_called_with(WORKFLOW_UUID, include_tasks=False)
         self.assertEqual(workflow.workflow_id, WORKFLOW_UUID)
 
@@ -151,23 +151,23 @@ class TestWorkflowClient(unittest.TestCase):
         error_body = { 'status': 404, 'message': 'Workflow not found' }
         mock.side_effect = MagicMock(side_effect=ApiException(status=404, body=json.dumps(error_body)))
         with self.assertRaises(APIError):
-            self.workflow_client.getWorkflow(WORKFLOW_UUID, False)
+            self.workflow_client.get_workflow(WORKFLOW_UUID, False)
             mock.assert_called_with(WORKFLOW_UUID, include_tasks=False)
 
     @patch.object(WorkflowResourceApi, 'delete')
     def test_deleteWorkflow(self, mock):
-        workflow = self.workflow_client.deleteWorkflow(WORKFLOW_UUID)
+        workflow = self.workflow_client.delete_workflow(WORKFLOW_UUID)
         mock.assert_called_with(WORKFLOW_UUID, archive_workflow=True)
 
     @patch.object(WorkflowResourceApi, 'delete')
     def test_deleteWorkflow_without_archival(self, mock):
-        workflow = self.workflow_client.deleteWorkflow(WORKFLOW_UUID, False)
+        workflow = self.workflow_client.delete_workflow(WORKFLOW_UUID, False)
         mock.assert_called_with(WORKFLOW_UUID, archive_workflow=False)
 
     @patch.object(WorkflowResourceApi, 'skip_task_from_workflow')
     def test_skipTaskFromWorkflow(self, mock):
         taskRefName = TASK_NAME + "_ref"
-        workflow = self.workflow_client.skipTaskFromWorkflow(WORKFLOW_UUID, taskRefName)
+        workflow = self.workflow_client.skip_task_from_workflow(WORKFLOW_UUID, taskRefName)
         mock.assert_called_with(WORKFLOW_UUID, taskRefName)
         
     @patch.object(WorkflowResourceApi, 'test_workflow')
@@ -177,6 +177,6 @@ class TestWorkflowClient(unittest.TestCase):
             workflow_def=WorkflowDef(name=WORKFLOW_NAME, version=1),
             name=WORKFLOW_NAME
         )
-        workflow = self.workflow_client.testWorkflow(testRequest)
+        workflow = self.workflow_client.test_workflow(testRequest)
         mock.assert_called_with(testRequest)
         self.assertEqual(workflow.workflow_id, WORKFLOW_UUID)

@@ -138,7 +138,7 @@ class TestClients:
         testRequest.version = workflowDef.version
         testRequest.task_ref_to_mock_output = testTaskInputs
 
-        execution = self.workflow_client.testWorkflow(testRequest)
+        execution = self.workflow_client.test_workflow(testRequest)
         assert execution != None
         
         # Ensure workflow is completed successfully
@@ -205,38 +205,38 @@ class TestClients:
 
     def __test_workflow_execution_lifecycle(self):
         wfInput = { "a" : 5, "b": "+", "c" : [7, 8] }
-        workflow_uuid = self.workflow_client.startWorkflowByName(WORKFLOW_NAME, wfInput)
+        workflow_uuid = self.workflow_client.start_workflow_by_name(WORKFLOW_NAME, wfInput)
         assert workflow_uuid is not None
 
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.input["a"] == 5
         assert workflow.input["b"] == "+"
         assert workflow.input["c"] == [7, 8]
         assert workflow.status == "RUNNING"
 
-        self.workflow_client.pauseWorkflow(workflow_uuid)
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        self.workflow_client.pause_workflow(workflow_uuid)
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "PAUSED"
 
         self.workflow_client.resumeWorkflow(workflow_uuid)
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "RUNNING"
 
-        self.workflow_client.terminateWorkflow(workflow_uuid, "Integration Test")
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        self.workflow_client.terminate_workflow(workflow_uuid, "Integration Test")
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "TERMINATED"
 
-        self.workflow_client.restartWorkflow(workflow_uuid)
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        self.workflow_client.restart_workflow(workflow_uuid)
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "RUNNING"
         
-        self.workflow_client.skipTaskFromWorkflow(workflow_uuid, "simple_task_ref_2")
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        self.workflow_client.skip_task_from_workflow(workflow_uuid, "simple_task_ref_2")
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "RUNNING"
 
-        self.workflow_client.deleteWorkflow(workflow_uuid)
+        self.workflow_client.delete_workflow(workflow_uuid)
         try:
-            workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+            workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         except APIError as e:
             assert e.code == APIErrorCode.NOT_FOUND
             assert e.message == "Workflow with Id: {} not found.".format(workflow_uuid)
@@ -260,24 +260,24 @@ class TestClients:
             input={ "a" : 15, "b": 3, "op" : "+" }
         )
         
-        workflow_uuid = self.workflow_client.startWorkflow(startWorkflowRequest)
-        workflow = self.workflow_client.getWorkflow(workflow_uuid, False)
+        workflow_uuid = self.workflow_client.start_workflow(startWorkflowRequest)
+        workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         
-        workflow_uuid_2 = self.workflow_client.startWorkflow(startWorkflowRequest)
+        workflow_uuid_2 = self.workflow_client.start_workflow(startWorkflowRequest)
         
         # First task of each workflow is in the queue
-        assert self.task_client.getQueueSizeForTask(TASK_TYPE) == 2
+        assert self.task_client.get_queue_size_for_task(TASK_TYPE) == 2
         
-        polledTask = self.task_client.pollTask(TASK_TYPE)
+        polledTask = self.task_client.poll_task(TASK_TYPE)
         assert polledTask.status == TaskResultStatus.IN_PROGRESS
         
-        self.task_client.addTaskLog(polledTask.task_id, "Polled task...")
+        self.task_client.add_task_log(polledTask.task_id, "Polled task...")
         
-        taskExecLogs = self.task_client.getTaskLogs(polledTask.task_id)
+        taskExecLogs = self.task_client.get_task_logs(polledTask.task_id)
         taskExecLogs[0].log == "Polled task..."
         
         # First task of second workflow is in the queue
-        assert self.task_client.getQueueSizeForTask(TASK_TYPE) == 1
+        assert self.task_client.get_queue_size_for_task(TASK_TYPE) == 1
         
         taskResult = TaskResult(
             workflow_instance_id=workflow_uuid,
@@ -285,17 +285,17 @@ class TestClients:
             status=TaskResultStatus.COMPLETED
         )
         
-        self.task_client.updateTask(taskResult)
+        self.task_client.update_task(taskResult)
         
-        task = self.task_client.getTask(polledTask.task_id)
+        task = self.task_client.get_task(polledTask.task_id)
         assert task.status == TaskResultStatus.COMPLETED
         
-        batchPolledTasks = self.task_client.batchPollTasks(TASK_TYPE)
+        batchPolledTasks = self.task_client.batch_poll_tasks(TASK_TYPE)
         assert len(batchPolledTasks) == 1
 
         polledTask = batchPolledTasks[0]
         # Update first task of second workflow
-        self.task_client.updateTaskByRefName(
+        self.task_client.update_task_by_ref_name(
             workflow_uuid_2,
             polledTask.reference_task_name,
             "COMPLETED",
@@ -303,20 +303,20 @@ class TestClients:
         )
         
         # Update second task of first workflow
-        self.task_client.updateTaskByRefName(
+        self.task_client.update_task_by_ref_name(
             workflow_uuid_2, "simple_task_ref_2", "COMPLETED", "task 2 op 1st wf"
         )
         
         # # Second task of second workflow is in the queue
-        # assert self.task_client.getQueueSizeForTask(TASK_TYPE) == 1
-        polledTask = self.task_client.pollTask(TASK_TYPE)
+        # assert self.task_client.get_queue_size_for_task(TASK_TYPE) == 1
+        polledTask = self.task_client.poll_task(TASK_TYPE)
 
         # Update second task of second workflow
-        self.task_client.updateTaskSync(
+        self.task_client.update_task_sync(
             workflow_uuid, "simple_task_ref_2", "COMPLETED", "task 1 op 2nd wf"
         )
         
-        assert self.task_client.getQueueSizeForTask(TASK_TYPE) == 0
+        assert self.task_client.get_queue_size_for_task(TASK_TYPE) == 0
 
     def __get_workflow_definition(self, path):
         f = open(path, "r")

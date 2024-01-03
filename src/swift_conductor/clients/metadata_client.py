@@ -2,12 +2,11 @@ from typing import Optional, List
 from swift_conductor.configuration import Configuration
 from swift_conductor.http.models.workflow_def import WorkflowDef
 from swift_conductor.http.models.task_def import TaskDef
-from swift_conductor.clients.metadata_client_abc import MetadataClientABC
 from swift_conductor.clients.base_client import BaseClient
 from swift_conductor.exceptions.api_exception_handler import api_exception_handler, for_all_methods
 
 @for_all_methods(api_exception_handler, ["__init__"])
-class MetadataClient(BaseClient, MetadataClientABC):
+class MetadataClient(BaseClient):
     def __init__(self, configuration: Configuration):
         super(MetadataClient, self).__init__(configuration)
         

@@ -3,17 +3,16 @@ from swift_conductor.configuration import Configuration
 from swift_conductor.http.models.task import Task
 from swift_conductor.http.models.task_result import TaskResult
 from swift_conductor.http.models.task_exec_log import TaskExecLog
-from swift_conductor.clients.task_client_abc import TaskClientABC
 from swift_conductor.http.models.workflow import Workflow
 from swift_conductor.clients.base_client import BaseClient
 from swift_conductor.exceptions.api_exception_handler import api_exception_handler, for_all_methods
 
 @for_all_methods(api_exception_handler, ["__init__"])
-class TaskClient(BaseClient, TaskClientABC):
+class TaskClient(BaseClient):
     def __init__(self, configuration: Configuration):
         super(TaskClient, self).__init__(configuration)
 
-    def pollTask(self, taskType: str, workerId: Optional[str] = None, domain: Optional[str] = None) -> Optional[Task]:
+    def poll_task(self, taskType: str, workerId: Optional[str] = None, domain: Optional[str] = None) -> Optional[Task]:
         kwargs = {}
         if workerId:
             kwargs.update({"workerid": workerId})
@@ -22,7 +21,7 @@ class TaskClient(BaseClient, TaskClientABC):
 
         return self.taskResourceApi.poll(taskType, **kwargs)
 
-    def batchPollTasks(
+    def batch_poll_tasks(
         self,
         taskType: str,
         workerId: Optional[str] = None,
@@ -42,13 +41,13 @@ class TaskClient(BaseClient, TaskClientABC):
 
         return self.taskResourceApi.batch_poll(taskType, **kwargs)
 
-    def getTask(self, taskId: str) -> Task:
+    def get_task(self, taskId: str) -> Task:
         return self.taskResourceApi.get_task(taskId)
 
-    def updateTask(self, taskResult: TaskResult) -> str:
+    def update_task(self, taskResult: TaskResult) -> str:
         return self.taskResourceApi.update_task(taskResult)
 
-    def updateTaskByRefName(
+    def update_task_by_ref_name(
         self,
         workflowId: str,
         taskRefName: str,
@@ -62,7 +61,7 @@ class TaskClient(BaseClient, TaskClientABC):
             kwargs.update({"workerid": workerId})
         return self.taskResourceApi.update_task1(body, workflowId, taskRefName, status, **kwargs)
     
-    def updateTaskSync(
+    def update_task_sync(
         self,
         workflowId: str,
         taskRefName: str,
@@ -76,13 +75,13 @@ class TaskClient(BaseClient, TaskClientABC):
             kwargs.update({"workerid": workerId})
         return self.taskResourceApi.update_task_sync(body, workflowId, taskRefName, status, **kwargs)
 
-    def getQueueSizeForTask(self, taskType: str) -> int:
+    def get_queue_size_for_task(self, taskType: str) -> int:
         queueSizesByTaskType = self.taskResourceApi.size(task_type=[taskType])
         queueSize = queueSizesByTaskType.get(taskType, 0)
         return queueSize
 
-    def addTaskLog(self, taskId: str, logMessage: str):
+    def add_task_log(self, taskId: str, logMessage: str):
         self.taskResourceApi.log(logMessage, taskId)
 
-    def getTaskLogs(self, taskId: str) -> List[TaskExecLog]:
+    def get_task_logs(self, taskId: str) -> List[TaskExecLog]:
         return self.taskResourceApi.get_task_logs(taskId)

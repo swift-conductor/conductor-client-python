@@ -10,7 +10,7 @@ class StartWorkflowTask(TaskInterface):
             task_reference_name=task_ref_name,
             task_type=TaskType.START_WORKFLOW,
             input_parameters={
-                "startWorkflow": {
+                "start_workflow": {
                     "name":          workflow_name,
                     "version":       version,
                     "input":         start_workflow_request.input,
