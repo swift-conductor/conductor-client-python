@@ -11,7 +11,12 @@ then
     # install Python 3.11 if not installed
     pyenv install 3.11 --skip-existing
     pyenv versions
+    
+    # create .python-version
     pyenv local 3.11
+
+    # use Python 3 from .python-version for local development
+    eval "$(pyenv init -)"    
 fi
 
 # create virtual environment
