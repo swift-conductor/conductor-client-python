@@ -1,5 +1,12 @@
 # Swift Conductor Client SDK for Python
 
+## ⭐ Swift Conductor
+
+Show support for Swift Conductor.  Please help spread the awareness by starring Swift Conductor repo.
+
+[![GitHub stars](https://img.shields.io/github/stars/swift-conductor/conductor.svg?style=social&label=Star&maxAge=)](https://GitHub.com/swift-conductor/conductor/)
+
+
 Install:
 
 ```shell
