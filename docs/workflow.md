@@ -28,7 +28,7 @@ workflow = Workflow(
     version=1
 )
 workflow.input_parameters(["a", "b"])
-workflow >> SimpleTask("simple_task", "simple_task_ref")
+workflow >> CustomTask("custom_task", "custom_task_ref")
 workflowDef = workflow.to_workflow_def()
 
 startWorkflowRequest = StartWorkflowRequest(
@@ -55,7 +55,7 @@ Starts a workflow and waits until the workflow completes or the waitUntilTask co
 wfInput = { "a" : 5, "b": "+", "c" : [7, 8] }
 requestId = "request_id"
 version = 1
-waitUntilTaskRef = "simple_task_ref" # Optional
+waitUntilTaskRef = "custom_task_ref" # Optional
 workflow_id = workflow_client.execute_workflow(
     startWorkflowRequest, requestId, "WORKFLOW_NAME", version, waitUntilTaskRef
 )
@@ -116,7 +116,7 @@ workflow_client.retry_workflow(workflow_id, resumeSubworkflowTasks=True)
 Skips a given task execution from a currently running workflow.
 
 ```python
-workflow_client.skip_task_from_workflow(workflow_id, "simple_task_ref")
+workflow_client.skip_task_from_workflow(workflow_id, "custom_task_ref")
 ```
 
 ### Delete workflow

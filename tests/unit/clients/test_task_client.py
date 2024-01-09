@@ -31,9 +31,9 @@ class TestTaskClient(unittest.TestCase):
         
     def setUp(self):
         self.tasks = [
-            Task(task_type=TaskType.SIMPLE, task_def_name=TASK_NAME, reference_task_name="simple_task_ref_1", task_id=TASK_ID),
-            Task(task_type=TaskType.SIMPLE, task_def_name=TASK_NAME, reference_task_name="simple_task_ref_2", task_id="task_id_2"),
-            Task(task_type=TaskType.SIMPLE, task_def_name=TASK_NAME, reference_task_name="simple_task_ref_3", task_id="task_id_3"),
+            Task(task_type=TaskType.CUSTOM, task_def_name=TASK_NAME, reference_task_name="custom_task_ref_1", task_id=TASK_ID),
+            Task(task_type=TaskType.CUSTOM, task_def_name=TASK_NAME, reference_task_name="custom_task_ref_2", task_id="task_id_2"),
+            Task(task_type=TaskType.CUSTOM, task_def_name=TASK_NAME, reference_task_name="custom_task_ref_3", task_id="task_id_3"),
         ]
         logging.disable(logging.CRITICAL)
 

@@ -41,7 +41,7 @@ def api_exception_handler(function):
                 message = e.body
         
             finally:
-                raise APIError(code, message)
+                    raise APIError(code, message)
                 
     return inner_function
 

@@ -10,7 +10,7 @@ from swift_conductor.worker.worker import ExecuteTaskFunction
 from swift_conductor.worker.worker import Worker
 from swift_conductor.workflow.workflow import Workflow
 from swift_conductor.workflow.workflow_manager import WorkflowManager
-from swift_conductor.task.simple_task import SimpleTask
+from swift_conductor.task.custom_task import CustomTask
 
 from resources.worker.python.python_worker import *
 
@@ -62,8 +62,8 @@ def run_workflow_execution_tests(configuration: Configuration, workflow_manager:
 
 
 def generate_tasks_defs():
-    python_simple_task_from_code = TaskDef(
-        description="desc python_simple_task_from_code",
+    python_custom_task_from_code = TaskDef(
+        description="desc python_custom_task_from_code",
         owner_app="python_integration_test_app",
         timeout_seconds=3,
         response_timeout_seconds=2,
@@ -73,7 +73,7 @@ def generate_tasks_defs():
         output_keys=[],
         owner_email=WORKFLOW_OWNER_EMAIL,
     )
-    return [python_simple_task_from_code]
+    return [python_custom_task_from_code]
 
 
 def test_get_workflow_by_correlation_ids(workflow_manager: WorkflowManager):
@@ -174,7 +174,7 @@ def generate_workflow(workflow_manager: WorkflowManager, workflow_name: str = WO
     ).owner_email(
         WORKFLOW_OWNER_EMAIL
     ).add(
-        SimpleTask(
+        CustomTask(
             task_def_name=task_name,
             task_reference_name=task_name,
         )

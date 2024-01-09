@@ -42,7 +42,8 @@ def main():
     workflow_manager = WorkflowManager(configuration)
 
     if len(args) == 1 and args[0] == '--clients-only':
-        TestClients(configuration=configuration).run()
+        test_clients = TestClients(configuration=configuration)
+        test_clients.run()
     elif len(args) == 1 and args[0] == '--workflow-execution-only':
         run_workflow_execution_tests(configuration, workflow_manager)
     else:

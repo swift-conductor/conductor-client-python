@@ -26,7 +26,7 @@ class SimplePythonWorker(WorkerInterface):
         return 0.5
 
     def get_domain(self) -> str:
-        return 'simple_python_worker'
+        return 'custom_python_worker'
 
 
 class ClassWorker(WorkerInterface):

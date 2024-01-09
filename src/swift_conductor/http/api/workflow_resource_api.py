@@ -1261,7 +1261,7 @@ class WorkflowResourceApi(object):
             collection_formats=collection_formats)
 
     def reset_workflow(self, workflow_id, **kwargs):  # noqa: E501
-        """Resets callback times of all non-terminal SIMPLE tasks to 0  # noqa: E501
+        """Resets callback times of all non-terminal CUSTOM tasks to 0  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
@@ -1282,7 +1282,7 @@ class WorkflowResourceApi(object):
             return data
 
     def reset_workflow_with_http_info(self, workflow_id, **kwargs):  # noqa: E501
-        """Resets callback times of all non-terminal SIMPLE tasks to 0  # noqa: E501
+        """Resets callback times of all non-terminal CUSTOM tasks to 0  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True

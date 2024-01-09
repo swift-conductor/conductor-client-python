@@ -28,7 +28,7 @@ class ClassWorkerWithDomain(WorkerInterface):
     def __init__(self, task_definition_name):
         super().__init__(task_definition_name)
         self.poll_interval = 850.0
-        self.domain = 'simple_python_worker'
+        self.domain = 'custom_python_worker'
 
     def execute(self, task: Task) -> TaskResult:
         task_result = self.get_task_result_from_task(task)

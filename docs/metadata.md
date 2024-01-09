@@ -32,19 +32,19 @@ After creating an instance of a `Workflow`, you can start adding tasks to it. Th
 * operator: `>>`
 
 ```python
-from swift_conductor.task.simple_task import SimpleTask
+from swift_conductor.task.custom_task import CustomTask
 
-simple_task_1 = SimpleTask(
-    task_def_name='python_simple_task_from_code_1',
-    task_reference_name='python_simple_task_from_code_1'
+custom_task_1 = CustomTask(
+    task_def_name='python_custom_task_from_code_1',
+    task_reference_name='python_custom_task_from_code_1'
 )
-workflow.add(simple_task_1)
+workflow.add(custom_task_1)
 
-simple_task_2 = SimpleTask(
-    task_def_name='python_simple_task_from_code_2',
-    task_reference_name='python_simple_task_from_code_2'
+custom_task_2 = CustomTask(
+    task_def_name='python_custom_task_from_code_2',
+    task_reference_name='python_custom_task_from_code_2'
 )
-workflow >> simple_task_2
+workflow >> custom_task_2
 ```
 
 You can add input parameters to your workflow:
@@ -77,7 +77,7 @@ In case there is an error in fetching the definition, errorStr will be populated
 You should be able to update your workflow after adding new tasks:
 
 ```python
-workflow >> SimpleTask("simple_task", "simple_task_ref_2")
+workflow >> CustomTask("custom_task", "custom_task_ref_2")
 updatedWorkflowDef = workflow.to_workflow_def()
 metadata_client.update_workflow_def(updatedWorkflowDef, True)
 ```

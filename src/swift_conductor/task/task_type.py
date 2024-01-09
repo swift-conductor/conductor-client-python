@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class TaskType(str, Enum):
-    SIMPLE = 'SIMPLE'
+    CUSTOM = 'CUSTOM'
     DYNAMIC = 'DYNAMIC'
     FORK_JOIN = 'FORK_JOIN'
     FORK_JOIN_DYNAMIC = 'FORK_JOIN_DYNAMIC'

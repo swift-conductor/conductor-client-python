@@ -11,13 +11,13 @@ from swift_conductor.task.http_task import HttpTask, HttpInput
 from swift_conductor.task.join_task import JoinTask
 from swift_conductor.task.json_jq_task import JsonJQTask
 from swift_conductor.task.set_variable_task import SetVariableTask
-from swift_conductor.task.simple_task import SimpleTask
+from swift_conductor.task.custom_task import CustomTask
 from swift_conductor.task.sub_workflow_task import SubWorkflowTask, InlineSubWorkflowTask
 from swift_conductor.task.switch_task import SwitchTask
 from swift_conductor.task.terminate_task import TerminateTask, WorkflowStatus
 
 WORKFLOW_NAME = 'python_test_workflow'
-TASK_NAME = 'python_test_simple_task'
+TASK_NAME = 'python_test_custom_task'
 WORKFLOW_OWNER_EMAIL = "test@test"
 
 
@@ -26,19 +26,19 @@ def run_workflow_definition_tests(workflow_manager: WorkflowManager) -> None:
 
 
 def generate_tasks_defs() -> List[TaskDef]:
-    python_simple_task_from_code = TaskDef(
-        description="desc python_simple_task_from_code",
+    python_custom_task_from_code = TaskDef(
+        description="desc python_custom_task_from_code",
         owner_app="python_integration_test_app",
         timeout_seconds=3,
         response_timeout_seconds=2,
         created_by=WORKFLOW_OWNER_EMAIL,
-        name="python_simple_task_from_code",
+        name="python_custom_task_from_code",
         input_keys=["input1"],
         output_keys=[],
         owner_email=WORKFLOW_OWNER_EMAIL,
     )
 
-    return [python_simple_task_from_code]
+    return [python_custom_task_from_code]
 
 
 def test_kitchensink_workflow_registration(workflow_manager: WorkflowManager) -> None:
@@ -70,8 +70,8 @@ def test_kitchensink_workflow_registration(workflow_manager: WorkflowManager) ->
     workflow_manager.terminate(workflow_id=workflow_id, reason="End test")
 
 
-def generate_simple_task(id: int) -> SimpleTask:
-    return SimpleTask(
+def generate_custom_task(id: int) -> CustomTask:
+    return CustomTask(
         task_def_name=TASK_NAME,
         task_reference_name=f'{TASK_NAME}_{id}'
     )
@@ -82,9 +82,9 @@ def generate_sub_workflow_inline_task(workflow_manager: WorkflowManager) -> Inli
         task_ref_name='python_sub_flow_inline_from_code',
         workflow=Workflow(
             manager=workflow_manager,
-            name='python_simple_workflow'
+            name='python_custom_workflow'
         ).add(
-            task=generate_simple_task(0)
+            task=generate_custom_task(0)
         )
     )
 
@@ -99,7 +99,7 @@ def generate_switch_task() -> SwitchTask:
         value='${workflow.input.number}',
     ).switch_case(
         case_name='LONG',
-        tasks=[generate_simple_task(i) for i in range(1, 3)],
+        tasks=[generate_custom_task(i) for i in range(1, 3)],
     ).default_case(
         tasks=[
             TerminateTask(
@@ -122,7 +122,7 @@ def generate_do_while_task_multiple() -> LoopTask:
     return LoopTask(
         task_ref_name="loop_until_success_multiple",
         iterations=1,
-        tasks=[generate_simple_task(i) for i in range(13, 14)],
+        tasks=[generate_custom_task(i) for i in range(13, 14)],
     )
 
 def generate_fork_task(workflow_manager: WorkflowManager) -> ForkTask:
@@ -134,7 +134,7 @@ def generate_fork_task(workflow_manager: WorkflowManager) -> ForkTask:
                 generate_do_while_task_multiple(),
                 generate_sub_workflow_inline_task(workflow_manager)
             ],
-            [generate_simple_task(i) for i in range(3, 5)]
+            [generate_custom_task(i) for i in range(3, 5)]
         ]
     )
 
@@ -165,7 +165,7 @@ def generate_set_variable_task() -> SetVariableTask:
 def generate_dynamic_fork_task() -> DynamicForkTask:
     return DynamicForkTask(
         task_ref_name='dynamic_fork',
-        pre_fork_task=generate_simple_task(10),
+        pre_fork_task=generate_custom_task(10),
         join_task=JoinTask(
             'join', join_on=[]
         ),
@@ -216,7 +216,7 @@ def generate_workflow(workflow_manager: WorkflowManager) -> Workflow:
     ).add(
         generate_http_task("http_task_0")
     ).add(
-        generate_simple_task(12)
+        generate_custom_task(12)
     ).add(
         generate_set_variable_task()
     ).add(

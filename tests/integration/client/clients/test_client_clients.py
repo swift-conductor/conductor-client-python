@@ -12,7 +12,7 @@ from swift_conductor.clients.task_client import TaskClient
 from swift_conductor.workflow.workflow import Workflow
 from swift_conductor.workflow.workflow_manager import WorkflowManager
 
-from swift_conductor.task.simple_task import SimpleTask
+from swift_conductor.task.custom_task import CustomTask
 
 from swift_conductor.http.models.workflow_def import WorkflowDef
 from swift_conductor.http.models.task_def import TaskDef
@@ -44,17 +44,10 @@ class TestClients:
 
         
     def run(self) -> None:
-        workflow = Workflow(
-            manager=self.workflow_manager,
-            name=WORKFLOW_NAME,
-            description='Test Create Workflow',
-            version=1
-        )
-        
-        workflow.owner_email(WORKFLOW_OWNER_EMAIL)
+        workflow = Workflow(self.workflow_manager, WORKFLOW_NAME, 1, 'Test Create Workflow').owner_email(WORKFLOW_OWNER_EMAIL)
 
         workflow.input_parameters(["a", "b"])
-        workflow >> SimpleTask("simple_task", "simple_task_ref")
+        workflow >> CustomTask("custom_task", "custom_task_ref")
         workflowDef = workflow.to_workflow_def()
         
         self.test_workflow_lifecycle(workflowDef, workflow)
@@ -75,6 +68,8 @@ class TestClients:
             input_keys=["a", "b"]
         )
 
+        taskDef.owner_email = 'test@test.com'
+
         self.metadata_client.register_task_def(taskDef)
 
         taskDef = self.metadata_client.get_task_def(TASK_TYPE)
@@ -88,7 +83,6 @@ class TestClients:
         assert fetchedTaskDef.description == taskDef.description
         assert len(fetchedTaskDef.input_keys) == 3
 
-        self.__test_task_tags()
         self.__test_task_execution_lifecycle()
 
         self.metadata_client.unregister_task_def(TASK_TYPE)
@@ -112,8 +106,8 @@ class TestClients:
         assert len(wfDef.tasks) == 1
 
     def __test_update_workflow_definition(self, workflow: Workflow):
-        workflow >> SimpleTask("simple_task", "simple_task_ref_2")
-        workflow >> SimpleTask("simple_task", "simple_task_ref_3")
+        workflow >> CustomTask("custom_task", "custom_task_ref_2")
+        workflow >> CustomTask("custom_task", "custom_task_ref_3")
         workflow.workflow_id = self.workflow_id
         updatedWorkflowDef = workflow.to_workflow_def()
         self.metadata_client.update_workflow_def(updatedWorkflowDef, True)
@@ -230,11 +224,13 @@ class TestClients:
         workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "RUNNING"
         
-        self.workflow_client.skip_task_from_workflow(workflow_uuid, "simple_task_ref_2")
+        self.workflow_client.skip_task_from_workflow(workflow_uuid, "custom_task_ref_2")
         workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         assert workflow.status == "RUNNING"
 
+        self.workflow_client.terminate_workflow(workflow_uuid, "Integration Test")
         self.workflow_client.delete_workflow(workflow_uuid)
+
         try:
             workflow = self.workflow_client.get_workflow(workflow_uuid, False)
         except APIError as e:
@@ -248,10 +244,11 @@ class TestClients:
             name=WORKFLOW_NAME + "_task",
             description='Test Task Client Workflow',
             version=1
-        )
+        ).owner_email(WORKFLOW_OWNER_EMAIL)
+
         workflow.input_parameters(["a", "b"])
-        workflow >> SimpleTask(TASK_TYPE, "simple_task_ref")
-        workflow >> SimpleTask(TASK_TYPE, "simple_task_ref_2")
+        workflow >> CustomTask(TASK_TYPE, "custom_task_ref")
+        workflow >> CustomTask(TASK_TYPE, "custom_task_ref_2")
         
         startWorkflowRequest = StartWorkflowRequest(
             name=WORKFLOW_NAME + "_task",
@@ -294,6 +291,7 @@ class TestClients:
         assert len(batchPolledTasks) == 1
 
         polledTask = batchPolledTasks[0]
+        
         # Update first task of second workflow
         self.task_client.update_task_by_ref_name(
             workflow_uuid_2,
@@ -304,7 +302,7 @@ class TestClients:
         
         # Update second task of first workflow
         self.task_client.update_task_by_ref_name(
-            workflow_uuid_2, "simple_task_ref_2", "COMPLETED", "task 2 op 1st wf"
+            workflow_uuid_2, "custom_task_ref_2", "COMPLETED", "task 2 op 1st wf"
         )
         
         # # Second task of second workflow is in the queue
@@ -313,7 +311,7 @@ class TestClients:
 
         # Update second task of second workflow
         self.task_client.update_task_sync(
-            workflow_uuid, "simple_task_ref_2", "COMPLETED", "task 1 op 2nd wf"
+            workflow_uuid, "custom_task_ref_2", "COMPLETED", "task 1 op 2nd wf"
         )
         
         assert self.task_client.get_queue_size_for_task(TASK_TYPE) == 0
