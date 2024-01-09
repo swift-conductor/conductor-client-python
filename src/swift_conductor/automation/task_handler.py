@@ -173,9 +173,15 @@ def __get_annotated_workers_from_subtree(pkg):
             if not file.endswith('.py') or file == '__init__.py':
                 continue
             module_path = os.path.join(root, file)
-            with open(module_path, 'r') as file:
-                source_code = file.read()
-            module = ast.parse(source_code, filename=module_path)
+            
+            try:
+                with open(module_path, 'r') as file:
+                    source_code = file.read()
+
+                module = ast.parse(source_code, filename=module_path)
+            except:
+                continue
+
             for node in ast.walk(module):
                 if not isinstance(node, ast.FunctionDef):
                     continue

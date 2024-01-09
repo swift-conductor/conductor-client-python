@@ -4,9 +4,8 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
-            "name": "Python: Integration Test",
+            "name": "Integration Test (--clients-only)",
             "type": "python",
             "request": "launch",
             "program": "tests/integration/main.py",
@@ -16,6 +15,18 @@
                 "CONDUCTOR_SERVER_URL" : "http://localhost:8080/api"
             },
             "args": ["--clients-only"]
+        },
+        {
+            "name": "Integration Test (--workflow-execution-only)",
+            "type": "python",
+            "request": "launch",
+            "program": "tests/integration/main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "CONDUCTOR_SERVER_URL" : "http://localhost:8080/api"
+            },
+            "args": ["--workflow-execution-only"]
         }
     ]
 }
