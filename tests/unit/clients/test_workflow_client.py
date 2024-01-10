@@ -2,7 +2,7 @@ import logging
 import unittest
 import json
 
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 from swift_conductor.http.rest import ApiException
 from swift_conductor.clients.workflow_client import WorkflowClient
 from swift_conductor.http.api.workflow_resource_api import WorkflowResourceApi
@@ -12,7 +12,6 @@ from swift_conductor.http.models.workflow_test_request import WorkflowTestReques
 from swift_conductor.http.models.workflow import Workflow
 from swift_conductor.http.models.workflow_def import WorkflowDef
 from swift_conductor.configuration import Configuration
-from swift_conductor.http.models.workflow_run import WorkflowRun
 from swift_conductor.exceptions.api_error import APIError
 
 WORKFLOW_NAME = 'ut_wf'
@@ -74,17 +73,6 @@ class TestWorkflowClient(unittest.TestCase):
         mock.assert_called_with(startWorkflowReq)
         self.assertEqual(wfId, WORKFLOW_UUID)
     
-    @patch.object(WorkflowResourceApi, 'execute_workflow')
-    def test_executeWorkflow(self, mock):
-        expectedWfRun = WorkflowRun()
-        mock.return_value = expectedWfRun
-        startWorkflowReq = StartWorkflowRequest()
-        workflowRun = self.workflow_client.execute_workflow(
-            startWorkflowReq, "request_id", WORKFLOW_NAME, 1
-        )
-        mock.assert_called_with(startWorkflowReq,"request_id", WORKFLOW_NAME, 1)
-        self.assertEqual(workflowRun, expectedWfRun)
-
     @patch.object(WorkflowResourceApi, 'pause_workflow1')
     def test_pauseWorkflow(self, mock):
         self.workflow_client.pause_workflow(WORKFLOW_UUID)
@@ -132,21 +120,21 @@ class TestWorkflowClient(unittest.TestCase):
         self.workflow_client.terminate_workflow(WORKFLOW_UUID, reason)
         mock.assert_called_with(WORKFLOW_UUID, reason=reason)
     
-    @patch.object(WorkflowResourceApi, 'get_execution_status')
+    @patch.object(WorkflowResourceApi, 'get_workflow')
     def test_getWorkflow(self, mock):
         mock.return_value = Workflow(workflow_id=WORKFLOW_UUID)
         workflow = self.workflow_client.get_workflow(WORKFLOW_UUID)
         mock.assert_called_with(WORKFLOW_UUID, include_tasks=True)
         self.assertEqual(workflow.workflow_id, WORKFLOW_UUID)
 
-    @patch.object(WorkflowResourceApi, 'get_execution_status')
+    @patch.object(WorkflowResourceApi, 'get_workflow')
     def test_getWorkflow_without_tasks(self, mock):
         mock.return_value = Workflow(workflow_id=WORKFLOW_UUID)
         workflow = self.workflow_client.get_workflow(WORKFLOW_UUID, False)
         mock.assert_called_with(WORKFLOW_UUID, include_tasks=False)
         self.assertEqual(workflow.workflow_id, WORKFLOW_UUID)
 
-    @patch.object(WorkflowResourceApi, 'get_execution_status')
+    @patch.object(WorkflowResourceApi, 'get_workflow')
     def test_getWorkflow_non_existent(self, mock):
         error_body = { 'status': 404, 'message': 'Workflow not found' }
         mock.side_effect = MagicMock(side_effect=ApiException(status=404, body=json.dumps(error_body)))

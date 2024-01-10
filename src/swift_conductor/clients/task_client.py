@@ -47,33 +47,6 @@ class TaskClient(BaseClient):
     def update_task(self, taskResult: TaskResult) -> str:
         return self.taskResourceApi.update_task(taskResult)
 
-    def update_task_by_ref_name(
-        self,
-        workflowId: str,
-        taskRefName: str,
-        status: str,
-        output: object,
-        workerId: Optional[str] = None
-    ) -> str:
-        body = { "result": output }
-        kwargs = {}
-        if workerId:
-            kwargs.update({"workerid": workerId})
-        return self.taskResourceApi.update_task1(body, workflowId, taskRefName, status, **kwargs)
-    
-    def update_task_sync(
-        self,
-        workflowId: str,
-        taskRefName: str,
-        status: str,
-        output: object,
-        workerId: Optional[str] = None
-    ) -> Workflow:
-        body = { "result": output }
-        kwargs = {}
-        if workerId:
-            kwargs.update({"workerid": workerId})
-        return self.taskResourceApi.update_task_sync(body, workflowId, taskRefName, status, **kwargs)
 
     def get_queue_size_for_task(self, taskType: str) -> int:
         queueSizesByTaskType = self.taskResourceApi.size(task_type=[taskType])

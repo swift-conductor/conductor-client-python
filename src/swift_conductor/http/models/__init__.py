@@ -23,7 +23,6 @@ from swift_conductor.http.models.task_result import TaskResult
 from swift_conductor.http.models.task_summary import TaskSummary
 from swift_conductor.http.models.workflow import Workflow
 from swift_conductor.http.models.workflow_def import WorkflowDef
-from swift_conductor.http.models.workflow_run import WorkflowRun
 from swift_conductor.http.models.workflow_status import WorkflowStatus
 from swift_conductor.http.models.workflow_summary import WorkflowSummary
 from swift_conductor.http.models.workflow_task import WorkflowTask

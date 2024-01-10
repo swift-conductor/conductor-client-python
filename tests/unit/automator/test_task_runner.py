@@ -1,4 +1,4 @@
-from swift_conductor.automation.task_runner import TaskRunner
+from swift_conductor.automation.worker_process import WorkerProcess
 from swift_conductor.configuration import Configuration
 from swift_conductor.http.api.task_resource_api import TaskResourceApi
 from swift_conductor.http.models.task import Task
@@ -6,7 +6,7 @@ from swift_conductor.http.models.task_result import TaskResult
 from swift_conductor.http.models.task_result_status import TaskResultStatus
 from tests.unit.resources.workers import ClassWorker
 from tests.unit.resources.workers import FaultyExecutionWorker
-from swift_conductor.worker.worker_interface import DEFAULT_POLLING_INTERVAL
+from swift_conductor.worker.worker_abc import DEFAULT_POLLING_INTERVAL
 from configparser import ConfigParser
 from unittest.mock import patch, ANY, Mock
 import os
@@ -29,7 +29,7 @@ class TestTaskRunner(unittest.TestCase):
     def test_initialization_with_invalid_configuration(self):
         expected_exception = Exception('Invalid configuration')
         with self.assertRaises(Exception) as context:
-            TaskRunner(
+            WorkerProcess(
                 configuration=None,
                 worker=self.__get_valid_worker()
             )
@@ -38,7 +38,7 @@ class TestTaskRunner(unittest.TestCase):
     def test_initialization_with_invalid_worker(self):
         expected_exception = Exception('Invalid worker')
         with self.assertRaises(Exception) as context:
-            TaskRunner(
+            WorkerProcess(
                 configuration=Configuration("http://localhost:8080/api"),
                 worker=None
             )
@@ -205,7 +205,7 @@ class TestTaskRunner(unittest.TestCase):
             reason_for_incompletion='faulty execution',
             logs=ANY
         )
-        task_runner = TaskRunner(
+        task_runner = WorkerProcess(
             configuration=Configuration(),
             worker=worker
         )
@@ -217,7 +217,7 @@ class TestTaskRunner(unittest.TestCase):
     def test_execute_task(self):
         expected_task_result = self.__get_valid_task_result()
         worker = self.__get_valid_worker()
-        task_runner = TaskRunner(
+        task_runner = WorkerProcess(
             configuration=Configuration(),
             worker=worker
         )
@@ -276,34 +276,34 @@ class TestTaskRunner(unittest.TestCase):
         self.assertGreater(spent_time, expected_time)
 
     def __get_valid_task_runner_with_worker_config(self, worker_config):
-        return TaskRunner(
+        return WorkerProcess(
             configuration=Configuration(),
             worker=self.__get_valid_worker(),
             worker_config=worker_config
         )
 
     def __get_valid_task_runner_with_worker_config_and_domain(self, worker_config, domain):
-        return TaskRunner(
+        return WorkerProcess(
             configuration=Configuration(),
             worker=self.__get_valid_worker(domain=domain),
             worker_config=worker_config
         )
 
     def __get_valid_task_runner_with_worker_config_and_poll_interval(self, worker_config, poll_interval):
-        return TaskRunner(
+        return WorkerProcess(
             configuration=Configuration(),
             worker=self.__get_valid_worker(poll_interval=poll_interval),
             worker_config=worker_config
         )
 
     def __get_valid_task_runner(self):
-        return TaskRunner(
+        return WorkerProcess(
             configuration=Configuration(),
             worker=self.__get_valid_worker()
         )
 
     def __get_valid_roundrobin_task_runner(self):
-        return TaskRunner(
+        return WorkerProcess(
             configuration=Configuration(),
             worker=self.__get_valid_multi_task_worker()
         )

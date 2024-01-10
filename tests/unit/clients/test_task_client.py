@@ -100,50 +100,6 @@ class TestTaskClient(unittest.TestCase):
         self.task_client.update_task(taskResultStatus)
         mock.assert_called_with(taskResultStatus)
     
-    @patch.object(TaskResourceApi, 'update_task1')
-    def test_updateTaskByRefName(self, mock):
-        status = TaskResultStatus.COMPLETED
-        output = { "a":  56 }
-        self.task_client.update_task_by_ref_name(
-            "wf_id", "test_task_ref_name", status, output
-        )
-        mock.assert_called_with({"result": output}, "wf_id", "test_task_ref_name", status)
-    
-    @patch.object(TaskResourceApi, 'update_task1')
-    def test_updateTaskByRefName_with_workerId(self, mock):
-        status = TaskResultStatus.COMPLETED
-        output = { "a":  56 }
-        self.task_client.update_task_by_ref_name(
-            "wf_id", "test_task_ref_name", status, output, "worker_id"
-        )
-        mock.assert_called_with({"result": output}, "wf_id", "test_task_ref_name", status, workerid="worker_id")
-
-    @patch.object(TaskResourceApi, 'update_task_sync')
-    def test_updateTaskSync(self, mock):
-        workflowId = "test_wf_id"
-        workflow = Workflow(workflow_id=workflowId)
-        mock.return_value = workflow
-        status = TaskResultStatus.COMPLETED
-        output = { "a":  56 }
-        returnedWorkflow = self.task_client.update_task_sync(
-            workflowId, "test_task_ref_name", status, output
-        )
-        mock.assert_called_with({"result": output}, workflowId, "test_task_ref_name", status)
-        self.assertEqual(returnedWorkflow, workflow)
-
-    @patch.object(TaskResourceApi, 'update_task_sync')
-    def test_updateTaskSync_with_workerId(self, mock):
-        workflowId = "test_wf_id"
-        workflow = Workflow(workflow_id=workflowId)
-        mock.return_value = workflow
-        status = TaskResultStatus.COMPLETED
-        output = { "a":  56 }
-        returnedWorkflow = self.task_client.update_task_sync(
-            workflowId, "test_task_ref_name", status, output, "worker_id"
-        )
-        mock.assert_called_with({"result": output}, workflowId, "test_task_ref_name", status, workerid="worker_id")
-        self.assertEqual(returnedWorkflow, workflow)
-
     @patch.object(TaskResourceApi, 'size')
     def test_getQueueSizeForTask(self, mock):
         mock.return_value = { TASK_NAME: 4 }

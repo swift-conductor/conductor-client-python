@@ -1,7 +1,6 @@
 from typing import Optional, Dict
 from swift_conductor.configuration import Configuration
 from swift_conductor.http.models.workflow import Workflow
-from swift_conductor.http.models.workflow_run import WorkflowRun
 from swift_conductor.http.models.start_workflow_request import StartWorkflowRequest
 from swift_conductor.http.models.rerun_workflow_request import RerunWorkflowRequest
 from swift_conductor.http.models.workflow_test_request import WorkflowTestRequest
@@ -37,17 +36,6 @@ class WorkflowClient(BaseClient):
     def start_workflow(self, startWorkflowRequest: StartWorkflowRequest) -> str:
         return self.workflowResourceApi.start_workflow(startWorkflowRequest)
 
-    def execute_workflow(
-        self,
-        startWorkflowRequest: StartWorkflowRequest,
-        requestId: str,
-        name: str,
-        version: int,
-        waitUntilTaskRef: Optional[str] = None
-    ) -> WorkflowRun:
-        kwargs = { "wait_until_task_ref" : waitUntilTaskRef } if waitUntilTaskRef else {}
-        return self.workflowResourceApi.execute_workflow(startWorkflowRequest, requestId, name, version, **kwargs)
-
     def pause_workflow(self, workflowId: str):
         self.workflowResourceApi.pause_workflow1(workflowId)
 
@@ -68,7 +56,7 @@ class WorkflowClient(BaseClient):
         self.workflowResourceApi.terminate1(workflowId, **kwargs)
 
     def get_workflow(self, workflowId: str, includeTasks: Optional[bool] = True) -> Workflow:
-        return self.workflowResourceApi.get_execution_status(workflowId, include_tasks=includeTasks)
+        return self.workflowResourceApi.get_workflow(workflowId, include_tasks=includeTasks)
 
     def delete_workflow(self, workflowId: str, archiveWorkflow: Optional[bool] = True):
         self.workflowResourceApi.delete(workflowId, archive_workflow=archiveWorkflow)

@@ -10,11 +10,11 @@ class MetadataClient(BaseClient):
     def __init__(self, configuration: Configuration):
         super(MetadataClient, self).__init__(configuration)
         
-    def register_workflow_def(self, workflowDef: WorkflowDef, overwrite: Optional[bool] = True):
-        self.metadataResourceApi.create(workflowDef, overwrite=overwrite)
+    def register_workflow_def(self, workflowDef: WorkflowDef):
+        self.metadataResourceApi.create(workflowDef)
 
-    def update_workflow_def(self, workflowDef: WorkflowDef, overwrite: Optional[bool] = True):
-        self.metadataResourceApi.update1([workflowDef], overwrite=overwrite)
+    def update_workflow_def(self, workflowDef: WorkflowDef):
+        self.metadataResourceApi.update1([workflowDef])
 
     def unregister_workflow_def(self, name: str, version: int):
         self.metadataResourceApi.unregister_workflow_def(name, version)

@@ -82,24 +82,6 @@ Gets the workflow by workflow id
 
 ---
 
-<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L49"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
-
-### <kbd>method</kbd> `get_workflow_status`
-
-```python
-get_workflow_status(
-    workflow_id: str,
-    include_output: bool,
-    include_variables: bool
-) → WorkflowStatus
-```
-
-Gets the workflow by workflow id 
-
-:param str workflow_id: :param bool include_output: :param bool include_variables: :return: WorkflowStatus 
-
----
-
 <a href="../src/conductor/client/workflow/manager/workflow_manager.py#L99"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `pause`
@@ -119,12 +101,12 @@ Pauses the workflow
 ### <kbd>method</kbd> `register_workflow`
 
 ```python
-register_workflow(workflow: WorkflowDef, overwrite: bool) → object
+register_workflow(workflow: WorkflowDef) → object
 ```
 
 Create a new workflow definition 
 
-:param WorkflowDef body: :param bool overwrite: :return: object 
+:param WorkflowDef body: :return: object 
 
 ---
 
@@ -265,27 +247,5 @@ update_task(
 Update a task 
 
 :param TaskResult body: :return: str 
-
----
-
-<a href="../src/conductor/client/workflow/manager/workflow_manager.py#L194"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
-
-### <kbd>method</kbd> `update_task_by_ref_name`
-
-```python
-update_task_by_ref_name(
-    task_output: Dict[str, Any],
-    workflow_id: str,
-    task_reference_name: str,
-    status: str
-) → str
-```
-
-Update a task By Ref Name   
-
-:param dict(str, object) body: :param str workflow_id: :param str task_ref_name: :param str status: :return: str 
-
-
-
 
 ---

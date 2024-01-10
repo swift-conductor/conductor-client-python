@@ -2,7 +2,7 @@ from typing import List
 
 from swift_conductor.http.models import TaskDef
 from swift_conductor.http.models.start_workflow_request import StartWorkflowRequest
-from swift_conductor.workflow.workflow import Workflow
+from swift_conductor.workflow.workflow_builder import WorkflowBuilder
 from swift_conductor.workflow.workflow_manager import WorkflowManager
 from swift_conductor.task.do_while_task import LoopTask
 from swift_conductor.task.dynamic_fork_task import DynamicForkTask
@@ -42,26 +42,29 @@ def generate_tasks_defs() -> List[TaskDef]:
 
 
 def test_kitchensink_workflow_registration(workflow_manager: WorkflowManager) -> None:
-    workflow = generate_sub_workflow(workflow_manager)
+    workflow_builder = generate_sub_workflow()
     try:
-        workflow_manager.metadata_client.unregister_workflow_def_with_http_info(
-            workflow.name, workflow.version
-        )
+        workflow_manager.metadata_client.unregister_workflow_def_with_http_info(workflow_builder.name, workflow_builder.version)
     except:
         pass
-    workflow.register(True)
-    workflow = generate_workflow(workflow_manager)
+
+
+    workflow_manager.register_workflow(workflow=workflow_builder.to_workflow_def())
+
+    workflow_builder = generate_workflow()
     workflow_manager.metadata_client.register_task_def(generate_tasks_defs())
     try:
         workflow_manager.metadata_client.unregister_workflow_def_with_http_info(
-            workflow.name, workflow.version
+            workflow_builder.name, workflow_builder.version
         )
     except:
         pass
-    workflow.register(True)
+
+    workflow_manager.register_workflow(workflow=workflow_builder.to_workflow_def())
+    
     workflow_id = workflow_manager.start_workflow(
         start_workflow_request=StartWorkflowRequest(
-            name=workflow.name
+            name=workflow_builder.name
         )
     )
     if type(workflow_id) != str or workflow_id == '':
@@ -77,15 +80,10 @@ def generate_custom_task(id: int) -> CustomTask:
     )
 
 
-def generate_sub_workflow_inline_task(workflow_manager: WorkflowManager) -> InlineSubWorkflowTask:
+def generate_sub_workflow_inline_task() -> InlineSubWorkflowTask:
     return InlineSubWorkflowTask(
         task_ref_name='python_sub_flow_inline_from_code',
-        workflow=Workflow(
-            manager=workflow_manager,
-            name='python_custom_workflow'
-        ).add(
-            task=generate_custom_task(0)
-        )
+        workflow = WorkflowBuilder(name='python_custom_workflow').owner_email('test@test.com').add(task=generate_custom_task(0))
     )
 
 
@@ -125,20 +123,20 @@ def generate_do_while_task_multiple() -> LoopTask:
         tasks=[generate_custom_task(i) for i in range(13, 14)],
     )
 
-def generate_fork_task(workflow_manager: WorkflowManager) -> ForkTask:
+def generate_fork_task() -> ForkTask:
     return ForkTask(
         task_ref_name='forked',
         forked_tasks=[
             [
                 generate_do_while_task(),
                 generate_do_while_task_multiple(),
-                generate_sub_workflow_inline_task(workflow_manager)
+                generate_sub_workflow_inline_task()
             ],
             [generate_custom_task(i) for i in range(3, 5)]
         ]
     )
 
-def generate_join_task(workflow_manager: WorkflowManager, fork_task: ForkTask) -> JoinTask:
+def generate_join_task(fork_task: ForkTask) -> JoinTask:
     return JoinTask(
         task_ref_name='join_forked',
         join_on=fork_task.to_workflow_task().join_on
@@ -191,10 +189,9 @@ def generate_json_jq_task() -> JsonJQTask:
     )
 
 
-def generate_sub_workflow(workflow_manager: WorkflowManager) -> Workflow:
+def generate_sub_workflow() -> WorkflowBuilder:
     workflow = (
-        Workflow(
-            manager=workflow_manager,
+        WorkflowBuilder(
             name="PopulationMinMax",
             description="Python workflow example from code",
             version=1234,
@@ -205,11 +202,10 @@ def generate_sub_workflow(workflow_manager: WorkflowManager) -> Workflow:
     return workflow
 
 
-def generate_workflow(workflow_manager: WorkflowManager) -> Workflow:
-    fork_task = generate_fork_task(workflow_manager)
+def generate_workflow() -> WorkflowBuilder:
+    fork_task = generate_fork_task()
     
-    workflow = Workflow(
-        manager=workflow_manager,
+    workflow = WorkflowBuilder(
         name='test-python-sdk-workflow-as-code',
         description='Python workflow example from code',
         version=1234,
@@ -222,7 +218,7 @@ def generate_workflow(workflow_manager: WorkflowManager) -> Workflow:
     ).add(
         fork_task
     ).add(
-        generate_join_task(workflow_manager, fork_task)
+        generate_join_task(fork_task)
     ).owner_email(WORKFLOW_OWNER_EMAIL)
 
     workflow >> generate_sub_workflow_task() >> generate_json_jq_task()

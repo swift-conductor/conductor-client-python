@@ -1,16 +1,16 @@
 from swift_conductor.http.models.task import Task
 from swift_conductor.http.models.task_result import TaskResult
 from swift_conductor.http.models.task_result_status import TaskResultStatus
-from swift_conductor.worker.worker_interface import WorkerInterface
+from swift_conductor.worker.worker_abc import WorkerAbc
 from typing import Any, Dict
 from requests.structures import CaseInsensitiveDict
 
-class FaultyExecutionWorker(WorkerInterface):
+class FaultyExecutionWorker(WorkerAbc):
     def execute(self, task: Task) -> TaskResult:
         raise Exception('faulty execution')
 
 
-class SimplePythonWorker(WorkerInterface):
+class SimplePythonWorker(WorkerAbc):
     def execute(self, task: Task) -> TaskResult:
         task_result = self.get_task_result_from_task(task)
         task_result.add_output_data('worker_style', 'class')
@@ -29,7 +29,7 @@ class SimplePythonWorker(WorkerInterface):
         return 'custom_python_worker'
 
 
-class ClassWorker(WorkerInterface):
+class ClassWorker(WorkerAbc):
     def __init__(self, task_definition_name: str):
         super().__init__(task_definition_name)
         self.poll_interval = 50.0

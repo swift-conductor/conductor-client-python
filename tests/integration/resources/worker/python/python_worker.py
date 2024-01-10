@@ -1,16 +1,16 @@
 from swift_conductor.http.models.task import Task
 from swift_conductor.http.models.task_result import TaskResult
 from swift_conductor.http.models.task_result_status import TaskResultStatus
-from swift_conductor.worker.worker_interface import WorkerInterface
-from swift_conductor.worker.worker_task import WorkerTask
+from swift_conductor.worker.worker_abc import WorkerAbc
+from swift_conductor.worker.worker_function import WorkerFunction
 
 
-class FaultyExecutionWorker(WorkerInterface):
+class FaultyExecutionWorker(WorkerAbc):
     def execute(self, task: Task) -> TaskResult:
         raise Exception('faulty execution')
 
 
-class ClassWorker(WorkerInterface):
+class PythonWorker(WorkerAbc):
     def __init__(self, task_definition_name):
         super().__init__(task_definition_name)
         self.poll_interval = 375.0
@@ -24,7 +24,7 @@ class ClassWorker(WorkerInterface):
         return task_result
 
 
-class ClassWorkerWithDomain(WorkerInterface):
+class PythonWorkerWithDomain(WorkerAbc):
     def __init__(self, task_definition_name):
         super().__init__(task_definition_name)
         self.poll_interval = 850.0
@@ -37,28 +37,6 @@ class ClassWorkerWithDomain(WorkerInterface):
         task_result.add_output_data('is_it_true', False)
         task_result.status = TaskResultStatus.COMPLETED
         return task_result
-
-
-@WorkerTask(task_definition_name='test_python_decorated_worker')
-def decorated_worker(obj: object) -> object:
-    return {
-        'worker_style': 'function',
-        'worker_input': 'Task',
-        'worker_output': 'object',
-        'task_input': obj,
-        'status': 'COMPLETED'
-    }
-
-@WorkerTask(task_definition_name='test_python_decorated_worker', domain='cool', poll_interval=500.0)
-def decorated_worker_with_domain_and_poll_interval(obj: object) -> object:
-    return {
-        'worker_style': 'function',
-        'worker_input': 'Task',
-        'worker_output': 'object',
-        'domain': 'cool',
-        'task_input': obj,
-        'status': 'COMPLETED'
-    }
 
 def worker_with_task_input_and_task_result_output(task: Task) -> TaskResult:
     task_result = TaskResult(

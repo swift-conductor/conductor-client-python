@@ -16,11 +16,9 @@ class WorkflowManager:
         self.task_client = TaskResourceApi(api_client)
         self.workflow_client = WorkflowResourceApi(api_client)
 
-    def register_workflow(self, workflow: WorkflowDef, overwrite: bool = None) -> object:
+    def register_workflow(self, workflow: WorkflowDef) -> object:
         """Create a new workflow definition"""
         kwargs = {}
-        if overwrite is not None:
-            kwargs['overwrite'] = overwrite
         return self.metadata_client.create(
             body=workflow, **kwargs
         )
@@ -42,17 +40,6 @@ class WorkflowManager:
             )
         return workflow_id_list
 
-    def execute_workflow(self, request: StartWorkflowRequest, wait_until_task_ref: str) -> WorkflowRun:
-        """Executes a workflow with StartWorkflowRequest and waits for the completion of the workflow or until a
-        specific task in the workflow """
-        return self.workflow_client.execute_workflow(
-            body=request,
-            request_id=str(uuid.uuid4()),
-            version=request.version,
-            name=request.name,
-            wait_until_task_ref=wait_until_task_ref,
-        )
-
     def remove_workflow(self, workflow_id: str, archive_workflow: bool = None) -> None:
         """Removes the workflow permanently from the system"""
         kwargs = {}
@@ -67,18 +54,7 @@ class WorkflowManager:
         kwargs = {}
         if include_tasks is not None:
             kwargs['include_tasks'] = include_tasks
-        return self.workflow_client.get_execution_status(
-            workflow_id=workflow_id, **kwargs
-        )
-
-    def get_workflow_status(self, workflow_id: str, include_output: bool = None, include_variables: bool = None) -> WorkflowStatus:
-        """Gets the workflow by workflow id"""
-        kwargs = {}
-        if include_output is not None:
-            kwargs['include_output'] = include_output
-        if include_variables is not None:
-            kwargs['include_variables'] = include_variables
-        return self.workflow_client.get_workflow_status_summary(
+        return self.workflow_client.get_workflow(
             workflow_id=workflow_id, **kwargs
         )
 
@@ -207,24 +183,6 @@ class WorkflowManager:
         )
         return self.task_client.update_task(
             body=task_result,
-        )
-
-    def update_task_by_ref_name(self, task_output: Dict[str, Any], workflow_id: str, task_reference_name: str, status: str) -> str:
-        """Update a task By Ref Name"""
-        return self.task_client.update_task1(
-            body=task_output,
-            workflow_id=workflow_id,
-            task_ref_name=task_reference_name,
-            status=status,
-        )
-
-    def update_task_by_ref_name_sync(self, task_output: Dict[str, Any], workflow_id: str, task_reference_name: str, status: str) -> Workflow:
-        """Update a task By Ref Name"""
-        return self.task_client.update_task_sync(
-            body=task_output,
-            workflow_id=workflow_id,
-            task_ref_name=task_reference_name,
-            status=status,
         )
 
     def get_task(self, task_id: str) -> str:

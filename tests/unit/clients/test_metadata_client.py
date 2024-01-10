@@ -37,25 +37,13 @@ class TestMetadataClient(unittest.TestCase):
     def test_registerWorkflowDef(self, mock):
         self.metadata_client.register_workflow_def(self.workflowDef)
         self.assertTrue(mock.called)
-        mock.assert_called_with(self.workflowDef, overwrite=True)
-
-    @patch.object(MetadataResourceApi, 'create')
-    def test_registerWorkflowDef_without_overwrite(self, mock):
-        self.metadata_client.register_workflow_def(self.workflowDef, False)
-        self.assertTrue(mock.called)
-        mock.assert_called_with(self.workflowDef, overwrite=False)
+        mock.assert_called_with(self.workflowDef)
 
     @patch.object(MetadataResourceApi, 'update1')
     def test_updateWorkflowDef(self, mock):
         self.metadata_client.update_workflow_def(self.workflowDef)
         self.assertTrue(mock.called)
-        mock.assert_called_with([self.workflowDef], overwrite=True)
-
-    @patch.object(MetadataResourceApi, 'update1')
-    def test_updateWorkflowDef_without_overwrite(self, mock):
-        self.metadata_client.update_workflow_def(self.workflowDef, False)
-        self.assertTrue(mock.called)
-        mock.assert_called_with([self.workflowDef], overwrite=False)
+        mock.assert_called_with([self.workflowDef])
 
     @patch.object(MetadataResourceApi, 'unregister_workflow_def')
     def test_unregisterWorkflowDef(self, mock):

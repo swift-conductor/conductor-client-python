@@ -1,6 +1,5 @@
 from swift_conductor.task.fork_task import ForkTask
 from swift_conductor.task.join_task import JoinTask
-from swift_conductor.workflow.workflow_manager import WorkflowManager
 from swift_conductor.task.task import TaskInterface
 from swift_conductor.task.timeout_policy import TimeoutPolicy
 from swift_conductor.http.models import *
@@ -10,15 +9,13 @@ from typing_extensions import Self
 from shortuuid import uuid
 
 
-class Workflow:
+class WorkflowBuilder:
     SCHEMA_VERSION = 2
 
     def __init__(self,
-                 manager: WorkflowManager,
                  name: str,
                  version: int = None,
                  description: str = None) -> Self:
-        self._manager = manager
         self.name = name
         self.version = version
         self.description = description
@@ -148,21 +145,6 @@ class Workflow:
         self._input_parameters = deepcopy(input_parameters)
         return self
 
-    # Register the workflow definition with the server. If overwrite is set, the definition on the server will be
-    # overwritten. When not set, the call fails if there is any change in the workflow definition between the server
-    # and what is being registered.
-    def register(self, overwrite: bool):
-        return self._manager.register_workflow(
-            overwrite=overwrite,
-            workflow=self.to_workflow_def(),
-        )
-
-    # Executes the workflow inline without registering with the server.  Useful for one-off workflows that need not
-    # be registered.
-    def start_workflow(self, start_workflow_request: StartWorkflowRequest):
-        start_workflow_request.workflow_def = self.to_workflow_def()
-        return self._manager.start_workflow(start_workflow_request)
-
     # Converts the workflow to the JSON serializable format
     def to_workflow_def(self) -> WorkflowDef:
         return WorkflowDef(
@@ -173,7 +155,7 @@ class Workflow:
             input_parameters=self._input_parameters,
             output_parameters=self._output_parameters,
             failure_workflow=self._failure_workflow,
-            schema_version=Workflow.SCHEMA_VERSION,
+            schema_version=WorkflowBuilder.SCHEMA_VERSION,
             owner_email=self._owner_email,
             timeout_policy=self._timeout_policy,
             timeout_seconds=self._timeout_seconds,

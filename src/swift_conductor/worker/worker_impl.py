@@ -2,17 +2,12 @@ from copy import deepcopy
 from swift_conductor.http.models.task import Task
 from swift_conductor.http.models.task_result import TaskResult
 from swift_conductor.http.models.task_result_status import TaskResultStatus
-from swift_conductor.worker.worker_interface import WorkerInterface, DEFAULT_POLLING_INTERVAL
+from swift_conductor.worker.worker_abc import WorkerAbc, DEFAULT_POLLING_INTERVAL
 from typing import Any, Callable, Union
 from typing_extensions import Self
 import inspect
 
-ExecuteTaskFunction = Callable[
-    [
-        Union[Task, object]
-    ],
-    Union[TaskResult, object]
-]
+ExecuteTaskFunction = Callable[[ Union[Task, object] ], Union[TaskResult, object]]
 
 
 def is_callable_input_parameter_a_task(callable: ExecuteTaskFunction, object_type: Any) -> bool:
@@ -28,7 +23,7 @@ def is_callable_return_value_of_type(callable: ExecuteTaskFunction, object_type:
     return return_annotation == object_type
 
 
-class Worker(WorkerInterface):
+class WorkerImpl(WorkerAbc):
     def __init__(self,
                  task_definition_name: str,
                  execute_function: ExecuteTaskFunction,
@@ -36,16 +31,21 @@ class Worker(WorkerInterface):
                  domain: str = None,
                  worker_id: str = None,
                  ) -> Self:
+        
         super().__init__(task_definition_name)
+        
         if poll_interval == None:
             self.poll_interval = DEFAULT_POLLING_INTERVAL
         else:
             self.poll_interval = deepcopy(poll_interval)
+        
         self.domain = deepcopy(domain)
+        
         if worker_id is None:
             self.worker_id = deepcopy(super().get_identity())
         else:
             self.worker_id = deepcopy(worker_id)
+        
         self.execute_function = deepcopy(execute_function)
 
     def execute(self, task: Task) -> TaskResult:
@@ -54,6 +54,7 @@ class Worker(WorkerInterface):
             execute_function_input = task
         else:
             execute_function_input = task.input_data
+        
         if self._is_execute_function_return_value_a_task_result:
             execute_function_output = self.execute_function(
                 execute_function_input)

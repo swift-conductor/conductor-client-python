@@ -1,6 +1,6 @@
 from swift_conductor.http.models.sub_workflow_params import SubWorkflowParams
 from swift_conductor.http.models.workflow_task import WorkflowTask
-from swift_conductor.workflow.workflow import Workflow
+from swift_conductor.workflow.workflow_builder import WorkflowBuilder
 from swift_conductor.task.task import TaskInterface
 from swift_conductor.task.task_type import TaskType
 from copy import deepcopy
@@ -29,7 +29,7 @@ class SubWorkflowTask(TaskInterface):
 
 
 class InlineSubWorkflowTask(TaskInterface):
-    def __init__(self, task_ref_name: str, workflow: Workflow) -> Self:
+    def __init__(self, task_ref_name: str, workflow: WorkflowBuilder) -> Self:
         super().__init__(
             task_reference_name=task_ref_name,
             task_type=TaskType.SUB_WORKFLOW,

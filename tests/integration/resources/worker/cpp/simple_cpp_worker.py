@@ -1,7 +1,7 @@
 from swift_conductor.http.models.task import Task
 from swift_conductor.http.models.task_result import TaskResult
 from swift_conductor.http.models.task_result_status import TaskResultStatus
-from swift_conductor.worker.worker_interface import WorkerInterface
+from swift_conductor.worker.worker_abc import WorkerAbc
 from ctypes import cdll
 
 
@@ -13,7 +13,7 @@ class CppWrapper:
         return self.cpp_lib.get_sum(X, Y)
 
 
-class SimpleCppWorker(WorkerInterface):
+class SimpleCppWorker(WorkerAbc):
     cpp_wrapper = CppWrapper()
 
     def execute(self, task: Task) -> TaskResult:

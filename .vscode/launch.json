@@ -12,6 +12,7 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "env": {
+                "OBJC_DISABLE_INITIALIZE_FORK_SAFETY": "YES",
                 "CONDUCTOR_SERVER_URL" : "http://localhost:8080/api"
             },
             "args": ["--clients-only"]
@@ -24,6 +25,7 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "env": {
+                "OBJC_DISABLE_INITIALIZE_FORK_SAFETY": "YES",
                 "CONDUCTOR_SERVER_URL" : "http://localhost:8080/api"
             },
             "args": ["--workflow-execution-only"]

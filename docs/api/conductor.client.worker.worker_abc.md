@@ -13,7 +13,7 @@
 
 <a href="../src/conductor/client/worker/worker_interface.py#L7"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
-## <kbd>class</kbd> `WorkerInterface`
+## <kbd>class</kbd> `WorkerAbc`
 
 
 

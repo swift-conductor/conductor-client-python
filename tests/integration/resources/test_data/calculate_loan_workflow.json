@@ -2,6 +2,7 @@
   "name": "test_workflow",
   "description": "Test Workflow for Loan Payment",
   "version": 1,
+  "ownerEmail": "test@test.com",
   "tasks": [
     {
       "name": "fetch_user_details",

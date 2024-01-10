@@ -49,7 +49,7 @@ configuration = Configuration(
 * server_api_url : Swift Conductor API URL. For example, if you are running a local server the URL will look like this `http://localhost:8080/api`.
 * debug: Set to `True` for verbose logging and `False` to print only errors.
 
-## Metrics Configuration for TaskHandler (Optional)
+## Metrics Configuration for WorkerHost (Optional)
 
 Swift Conductor uses [Prometheus](https://prometheus.io/) to collect metrics.
 
@@ -65,5 +65,5 @@ metrics_settings = MetricsSettings(
 * `file_name`: File where the metrics are stored. Example: `metrics.log`
 * `update_interval`: Time interval in seconds to refresh metrics into the file. Example: `0.1` means metrics are updated every  0.1s or 100ms.
 
-Pass the `MetricsSettings` object to the `TaskHandler` constructor. 
+Pass the `MetricsSettings` object to the `WorkerHost` constructor. 
 

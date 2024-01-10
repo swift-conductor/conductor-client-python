@@ -21,14 +21,16 @@ workflow_client = WorkflowClient(configuration)
 #### Start using StartWorkflowRequest
 
 ```python
-workflow = Workflow(
-    manager=self.workflow_manager,
+workflow = WorkflowBuilder(
     name="WORKFLOW_NAME",
     description='Test Create Workflow',
     version=1
 )
+
 workflow.input_parameters(["a", "b"])
+
 workflow >> CustomTask("custom_task", "custom_task_ref")
+
 workflowDef = workflow.to_workflow_def()
 
 startWorkflowRequest = StartWorkflowRequest(
@@ -37,6 +39,7 @@ startWorkflowRequest = StartWorkflowRequest(
     workflow_def=workflowDef,
     input={ "a" : 15, "b": 3 }
 )
+
 workflow_id = workflow_client.start_workflow(startWorkflowRequest)
 ```
 
@@ -45,20 +48,6 @@ workflow_id = workflow_client.start_workflow(startWorkflowRequest)
 ```python
 wfInput = { "a" : 5, "b": "+", "c" : [7, 8] }
 workflow_id = workflow_client.start_workflow_by_name("WORKFLOW_NAME", wfInput)
-```
-
-#### Execute workflow synchronously
-
-Starts a workflow and waits until the workflow completes or the waitUntilTask completes.
-
-```python
-wfInput = { "a" : 5, "b": "+", "c" : [7, 8] }
-requestId = "request_id"
-version = 1
-waitUntilTaskRef = "custom_task_ref" # Optional
-workflow_id = workflow_client.execute_workflow(
-    startWorkflowRequest, requestId, "WORKFLOW_NAME", version, waitUntilTaskRef
-)
 ```
 
 ### Fetch a workflow execution

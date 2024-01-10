@@ -30,7 +30,6 @@ class MetadataResourceApi(object):
 
         :param async_req bool
         :param WorkflowDef body: (required)
-        :param bool overwrite:
         :return: object
                  If the method is called asynchronously,
                  returns the request thread.
@@ -52,13 +51,12 @@ class MetadataResourceApi(object):
 
         :param async_req bool
         :param WorkflowDef body: (required)
-        :param bool overwrite:
         :return: object
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['body', 'overwrite']  # noqa: E501
+        all_params = ['body']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -82,9 +80,7 @@ class MetadataResourceApi(object):
 
         path_params = {}
 
-        query_params = []
-        if 'overwrite' in params:
-            query_params.append(('overwrite', params['overwrite']))  # noqa: E501
+        query_params = {}
 
         header_params = {}
 
@@ -1081,7 +1077,6 @@ class MetadataResourceApi(object):
 
         :param async_req bool
         :param list[WorkflowDef] body: (required)
-        :param bool overwrite:
         :return: object
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1103,13 +1098,12 @@ class MetadataResourceApi(object):
 
         :param async_req bool
         :param list[WorkflowDef] body: (required)
-        :param bool overwrite:
         :return: object
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['body', 'overwrite']  # noqa: E501
+        all_params = ['body']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1134,8 +1128,6 @@ class MetadataResourceApi(object):
         path_params = {}
 
         query_params = []
-        if 'overwrite' in params:
-            query_params.append(('overwrite', params['overwrite']))  # noqa: E501
 
         header_params = {}
 

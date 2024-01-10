@@ -7,7 +7,7 @@ from typing import Union
 
 DEFAULT_POLLING_INTERVAL = 100 # ms
 
-class WorkerInterface(abc.ABC):
+class WorkerAbc(abc.ABC):
     def __init__(self, task_definition_name: Union[str, list]):
         self.task_definition_name = task_definition_name
         self.next_task_index = 0

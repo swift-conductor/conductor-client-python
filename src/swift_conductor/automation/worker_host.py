@@ -1,9 +1,9 @@
-from swift_conductor.automation.task_runner import TaskRunner
+from swift_conductor.automation.worker_process import WorkerProcess
 from swift_conductor.configuration import Configuration
 from swift_conductor.settings.metrics_settings import MetricsSettings
 from swift_conductor.telemetry.metrics_collector import MetricsCollector
-from swift_conductor.worker.worker import Worker
-from swift_conductor.worker.worker_interface import WorkerInterface
+from swift_conductor.worker.worker_impl import WorkerImpl
+from swift_conductor.worker.worker_abc import WorkerAbc
 from multiprocessing import Process, freeze_support
 from configparser import ConfigParser
 from typing import List
@@ -20,33 +20,24 @@ logger = logging.getLogger(
     )
 )
 
-
-def get_annotated_workers():
-    pkg = __get_client_topmost_package_filepath()
-    workers = __get_annotated_workers_from_subtree(pkg)
-    logger.debug(f'Found {len(workers)} workers')
-    return workers
-
-
-class TaskHandler:
+class WorkerHost:
     def __init__(
             self,
-            workers: List[WorkerInterface] = None,
+            workers: List[WorkerAbc] = None,
             configuration: Configuration = None,
             metrics_settings: MetricsSettings = None,
-            scan_for_annotated_workers: bool = None,
     ):
         self.worker_config = load_worker_config()
+
         if workers is None:
             workers = []
         elif not isinstance(workers, list):
             workers = [workers]
-        if scan_for_annotated_workers is True:
-            for worker in get_annotated_workers():
-                workers.append(worker)
+
         self.__create_task_runner_processes(
             workers, configuration, metrics_settings
         )
+
         self.__create_metrics_provider_process(
             metrics_settings
         )
@@ -79,59 +70,49 @@ class TaskHandler:
         if metrics_settings == None:
             self.metrics_provider_process = None
             return
-        self.metrics_provider_process = Process(
-            target=MetricsCollector.provide_metrics,
-            args=(metrics_settings,)
-        )
+        
+        self.metrics_provider_process = Process(target=MetricsCollector.provide_metrics, args=(metrics_settings))
         logger.info('Created MetricsProvider process')
 
-    def __create_task_runner_processes(
-        self,
-        workers: List[WorkerInterface],
-        configuration: Configuration,
-        metrics_settings: MetricsSettings
-    ) -> None:
+    def __create_task_runner_processes(self, workers: List[WorkerAbc], configuration: Configuration, metrics_settings: MetricsSettings) -> None:
         self.task_runner_processes = []
+        
         for worker in workers:
-            self.__create_task_runner_process(
-                worker, configuration, metrics_settings
-            )
+            self.__create_task_runner_process(worker, configuration, metrics_settings)
+        
         logger.info('Created TaskRunner processes')
 
-    def __create_task_runner_process(
-        self,
-        worker: WorkerInterface,
-        configuration: Configuration,
-        metrics_settings: MetricsSettings
-    ) -> None:
-        task_runner = TaskRunner(
-            worker, configuration, metrics_settings, self.worker_config
-        )
-        process = Process(
-            target=task_runner.run
-        )
+    def __create_task_runner_process(self, worker: WorkerAbc, configuration: Configuration, metrics_settings: MetricsSettings) -> None:
+        task_runner = WorkerProcess(worker, configuration, metrics_settings, self.worker_config)
+        process = Process(target=task_runner.run)
         self.task_runner_processes.append(process)
 
     def __start_metrics_provider_process(self):
         if self.metrics_provider_process == None:
             return
+        
         self.metrics_provider_process.start()
+        
         logger.info('Started MetricsProvider process')
 
     def __start_task_runner_processes(self):
         for task_runner_process in self.task_runner_processes:
             task_runner_process.start()
+        
         logger.info('Started TaskRunner processes')
 
     def __join_metrics_provider_process(self):
         if self.metrics_provider_process == None:
             return
+        
         self.metrics_provider_process.join()
+        
         logger.info('Joined MetricsProvider processes')
 
     def __join_task_runner_processes(self):
         for task_runner_process in self.task_runner_processes:
             task_runner_process.join()
+        
         logger.info('Joined TaskRunner processes')
 
     def __stop_metrics_provider_process(self):
@@ -163,78 +144,6 @@ def __get_client_topmost_package_filepath():
     return None
 
 
-def __get_annotated_workers_from_subtree(pkg):
-    workers = []
-    if not pkg:
-        return workers
-    pkg_path = os.path.dirname(pkg)
-    for root, _, files in os.walk(pkg_path):
-        for file in files:
-            if not file.endswith('.py') or file == '__init__.py':
-                continue
-            module_path = os.path.join(root, file)
-            
-            try:
-                with open(module_path, 'r') as file:
-                    source_code = file.read()
-
-                module = ast.parse(source_code, filename=module_path)
-            except:
-                continue
-
-            for node in ast.walk(module):
-                if not isinstance(node, ast.FunctionDef):
-                    continue
-                for decorator in node.decorator_list:
-                    params = __extract_decorator_info(
-                        decorator)
-                    if params is None:
-                        continue
-                    try:
-                        worker = __create_worker_from_ast_node(
-                            node, params)
-                        if worker:
-                            workers.append(worker)
-                    except Exception as e:
-                        # logger.debug(f'Failed to create worker from function: {node.name}. Reason: {str(e)}')
-                        continue
-    return workers
-
-
-def __extract_decorator_info(decorator):
-    if not isinstance(decorator, ast.Call):
-        return None, None
-    decorator_type = None
-    decorator_func = decorator.func
-    if isinstance(decorator_func, ast.Attribute):
-        decorator_type = decorator_func.attr
-    elif isinstance(decorator_func, ast.Name):
-        decorator_type = decorator_func.id
-    if decorator_type != 'WorkerTask':
-        return None
-    decorator_params = {}
-    if decorator.args:
-        for arg in decorator.args:
-            arg_value = astor.to_source(arg).strip()
-            decorator_params[arg_value] = ast.literal_eval(arg)
-    if decorator.keywords:
-        for keyword in decorator.keywords:
-            param_name = keyword.arg
-            param_value = ast.literal_eval(keyword.value)
-            decorator_params[param_name] = param_value
-    return decorator_params
-
-
-def __create_worker_from_ast_node(node, params):
-    auxiliar_node = copy.deepcopy(node)
-    auxiliar_node.decorator_list = []
-    function_source_code = ast.unparse(auxiliar_node)
-    exec(function_source_code)
-    execute_function = list(locals()[node.name])
-    params['execute_function'] = execute_function
-    worker = Worker(**params)
-    return worker
-
 def load_worker_config():
     worker_config = ConfigParser()
 
@@ -245,6 +154,7 @@ def load_worker_config():
         logger.error(str(e))
 
     return worker_config
+
 
 def __get_config_file_path() -> str:
     return os.getcwd() + "/worker.ini"

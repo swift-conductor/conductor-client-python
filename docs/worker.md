@@ -2,7 +2,7 @@
 
 Considering real use cases, the goal is to run multiple workers in parallel. Due to some limitations with Python, a multiprocessing architecture was chosen in order to enable real parallelization.
 
-You can write your workers independently and append them to a list. The `TaskHandler` class will spawn a unique and independent process for each worker, making sure it will behave as expected, by running an infinite loop like this:
+You can write your workers independently and append them to a list. The `WorkerHost` class will spawn a unique and independent process for each worker, making sure it will behave as expected, by running an infinite loop like this:
 * Poll for a `Task` at Conductor Server
 * Generate `TaskResult` from given `Task`
 * Update given `Task` with `TaskResult` at Conductor Server
@@ -10,9 +10,9 @@ You can write your workers independently and append them to a list. The `TaskHan
 ## Write workers
 
 Currently, there are three ways of writing a Python worker:
+
 1. [Worker as a function](#worker-as-a-function)
 2. [Worker as a class](#worker-as-a-class)
-3. [Worker as an annotation](#worker-as-an-annotation)
 
 
 ### Worker as a function
@@ -48,14 +48,14 @@ In the case you like more details, you can take a look at all possible combinati
 
 ### Worker as a class
 
-The class must implement `WorkerInterface` class, which requires an `execute` method. The remaining ones are inherited, but can be easily overridden. Example with a custom polling interval:
+The class must implement `WorkerAbc` class, which requires an `execute` method. The remaining ones are inherited, but can be easily overridden. Example with a custom polling interval:
 
 ```python
 from swift_conductor.http.models import Task, TaskResult
 from swift_conductor.http.models.task_result_status import TaskResultStatus
-from swift_conductor.worker.worker_interface import WorkerInterface
+from swift_conductor.worker.worker_interface import WorkerAbc
 
-class SimplePythonWorker(WorkerInterface):
+class SimplePythonWorker(WorkerAbc):
     def execute(self, task: Task) -> TaskResult:
         task_result = self.get_task_result_from_task(task)
         task_result.add_output_data('worker_style', 'class')
@@ -69,37 +69,18 @@ class SimplePythonWorker(WorkerInterface):
         return 0.5
 ```
 
-### Worker as an annotation
-
-A worker can also be invoked by adding a WorkerTask decorator as shown in the below example.
-As long as the annotated worker is in any file inside the root folder of your worker application, it will be picked up by the `TaskHandler`, see [Run Workers](#run-workers)
-
-The arguments that can be passed when defining the decorated worker are:
-1. task_definition_name: The task definition name of the condcutor task that needs to be polled for.
-2. domain: Optional routing domain of the worker to execute tasks with a specific domain
-3. worker_id: An optional worker id used to identify the polling worker
-4. poll_interval: Polling interval in seconds. Defaulted to 1 second if not passed.
-
-```python
-from swift_conductor.worker.worker_task import WorkerTask
-
-@WorkerTask(task_definition_name='python_annotated_task', worker_id='decorated', poll_interval=200.0)
-def python_annotated_task(input) -> object:
-    return {'message': 'python is so cool :)'}
-```
-
 ## Run Workers
 
-Now you can run your workers by calling a `TaskHandler`, example:
+Now you can run your workers by calling a `WorkerHost`, example:
 
 ```python
 from swift_conductor.configuration import Configuration
-from swift_conductor.automation.task_handler import TaskHandler
+from swift_conductor.automation.worker_host import WorkerHost
 from swift_conductor.worker.worker import Worker
 
 #### Add these lines if running on a mac####
 from multiprocessing import set_start_method
-set_start_method('fork')
+set_start_method('spawn')
 ############################################
 
 SERVER_API_URL = 'http://localhost:8080/api'
@@ -114,7 +95,7 @@ workers = [
     SimplePythonWorker(
         task_definition_name='python_task_example'
     ),
-    Worker(
+    WorkerImpl(
         task_definition_name='python_execute_function_task',
         execute_function=execute,
         poll_interval=250,
@@ -122,30 +103,19 @@ workers = [
     )
 ]
 
-# If there are decorated workers in your application, scan_for_annotated_workers should be set
-# default value of scan_for_annotated_workers is False
-with TaskHandler(workers, configuration, scan_for_annotated_workers=True) as task_handler:
-    task_handler.start_processes()
+with WorkerHost(workers, configuration) as worker_host:
+    worker_host.start_processes()
 ```
 
 ## Task Domains
 
 Workers can be configured to start polling for work that is tagged by a task domain. See more on domains [here](https://swiftconductor.com/documentation/configuration/taskdomains.html).
 
-
-```python
-from swift_conductor.worker.worker_task import WorkerTask
-
-@WorkerTask(task_definition_name='python_annotated_task', domain='cool')
-def python_annotated_task(input) -> object:
-    return {'message': 'python is so cool :)'}
-```
-
-The above code would run a worker polling for task of type, `python_annotated_task`, but only for workflows that have a task to domain mapping specified with domain for this task as `cool`.
+The above `WorkerImpl` worker will poll for task of type, `python_execute_function_task`, but only for workflows that have a task to domain mapping specified with domain for this task as `test`.
 
 ```json
 "taskToDomain": {
-   "python_annotated_task": "cool"
+   "python_execute_function_task": "test"
 }
 ```
 
@@ -189,52 +159,7 @@ domain = hot
 polling_interval = 300
 ```
 
-With the presence of the above config file, you don't need to specify domain and poll_interval for any of the worker task types.
-
-##### Without config
-
-```python
-from swift_conductor.worker.worker_task import WorkerTask
-
-@WorkerTask(task_definition_name='python_annotated_task_1', domain='cool', poll_interval=500.0)
-def python_annotated_task(input) -> object:
-    return {'message': 'python is so cool :)'}
-
-@WorkerTask(task_definition_name='python_annotated_task_2', domain='hot', poll_interval=300.0)
-def python_annotated_task_2(input) -> object:
-    return {'message': 'python is so hot :)'}
-
-@WorkerTask(task_definition_name='python_annotated_task_3', domain='nice', poll_interval=2000.0)
-def python_annotated_task_3(input) -> object:
-    return {'message': 'python is so nice :)'}
-
-@WorkerTask(task_definition_name='python_annotated_task_4', domain='nice', poll_interval=2000.0)
-def python_annotated_task_4(input) -> object:
-    return {'message': 'python is very nice :)'}
-```
-
-##### With config
-
-```python
-from swift_conductor.worker.worker_task import WorkerTask
-
-@WorkerTask(task_definition_name='python_annotated_task_1')
-def python_annotated_task(input) -> object:
-    return {'message': 'python is so cool :)'}
-
-@WorkerTask(task_definition_name='python_annotated_task_2')
-def python_annotated_task_2(input) -> object:
-    return {'message': 'python is so hot :)'}
-
-@WorkerTask(task_definition_name='python_annotated_task_3')
-def python_annotated_task_3(input) -> object:
-    return {'message': 'python is so nice :)'}
-
-@WorkerTask(task_definition_name='python_annotated_task_4')
-def python_annotated_task_4(input) -> object:
-    return {'message': 'python is very nice :)'}
-
-```
+With the presence of the above config file, you don't need to specify domain and poll_interval for any of the workers.
 
 ### Using Environment Variables
 
@@ -289,17 +214,17 @@ workers = [
 
 ```python
 workers = [
-    Worker(
+    WorkerImpl(
         task_definition_name='python_task_example',
         execute_function=execute,
         poll_interval=0.25,
     ),
-    Worker(
+    WorkerImpl(
         task_definition_name='python_task_example',
         execute_function=execute,
         poll_interval=0.25,
     ),
-    Worker(
+    WorkerImpl(
         task_definition_name='python_task_example',
         execute_function=execute,
         poll_interval=0.25,
@@ -307,5 +232,3 @@ workers = [
     ...
 ]
 ```
-
-### Next: [Create workflows using Code](../workflow/README.md)

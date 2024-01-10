@@ -50,28 +50,6 @@ task_result = TaskResult(
 task_client.update_task(task_result)
 ```
 
-#### Update task using task reference name
-
-```python
-task_client.update_task_by_ref_name(
-    "workflow_instance_id",
-    "task_ref_name",
-    "COMPLETED",
-    "task 2 op 2nd wf"
-)
-```
-
-#### Update task synchronously
-
-```python
-task_client.update_task_sync(
-    "workflow_instance_id",
-    "task_ref_name",
-    "COMPLETED",
-    "task 2 op 2nd wf"
-)
-```
-
 ### Task Log Management
 
 #### Add Task logs
