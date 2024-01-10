@@ -9,7 +9,7 @@ You can write your workers independently and append them to a list. The `WorkerH
 
 ## Write workers
 
-Currently, there are three ways of writing a Python worker:
+Currently, there are two ways of writing a Python worker:
 
 1. [Worker as a function](#worker-as-a-function)
 2. [Worker as a class](#worker-as-a-class)
@@ -55,7 +55,7 @@ from swift_conductor.http.models import Task, TaskResult
 from swift_conductor.http.models.task_result_status import TaskResultStatus
 from swift_conductor.worker.worker_interface import WorkerAbc
 
-class SimplePythonWorker(WorkerAbc):
+class SimpleWorker(WorkerAbc):
     def execute(self, task: Task) -> TaskResult:
         task_result = self.get_task_result_from_task(task)
         task_result.add_output_data('worker_style', 'class')
@@ -92,7 +92,7 @@ configuration = Configuration(
 )
 
 workers = [
-    SimplePythonWorker(
+    SimpleWorker(
         task_definition_name='python_task_example'
     ),
     WorkerImpl(
@@ -199,13 +199,13 @@ If you're looking for better performance (i.e. more workers of the same type) - 
 
 ```python
 workers = [
-    SimplePythonWorker(
+    SimpleWorker(
         task_definition_name='python_task_example'
     ),
-    SimplePythonWorker(
+    SimpleWorker(
         task_definition_name='python_task_example'
     ),
-    SimplePythonWorker(
+    SimpleWorker(
         task_definition_name='python_task_example'
     ),
     ...
@@ -228,7 +228,7 @@ workers = [
         task_definition_name='python_task_example',
         execute_function=execute,
         poll_interval=0.25,
-    )
+    ),
     ...
 ]
 ```

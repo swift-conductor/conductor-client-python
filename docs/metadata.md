@@ -48,7 +48,7 @@ You can add input parameters to your workflow:
 workflow_builder.input_parameters(["a", "b"])
 ```
 
-You should be able to register your workflow at the Conductor Server:
+You should be able to register your workflow with the Conductor Server:
 
 ```python
 workflowDef = workflow.to_workflow_def()
