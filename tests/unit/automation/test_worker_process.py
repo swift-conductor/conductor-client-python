@@ -15,7 +15,7 @@ import time
 import unittest
 from requests.structures import CaseInsensitiveDict
 
-class TestTaskRunner(unittest.TestCase):
+class TestWorkerProcess(unittest.TestCase):
     TASK_ID = 'VALID_TASK_ID'
     WORKFLOW_INSTANCE_ID = 'VALID_WORKFLOW_INSTANCE_ID'
     UPDATE_TASK_RESPONSE = 'VALID_UPDATE_TASK_RESPONSE'
@@ -45,7 +45,7 @@ class TestTaskRunner(unittest.TestCase):
             self.assertEqual(expected_exception, context.exception)
 
     def test_initialization_without_worker_config(self):
-        task_runner = self.__get_valid_task_runner()
+        task_runner = self.__get_valid_process()
         self.assertIsNone(task_runner.worker_config)
 
     def test_initialization_with_no_domain_in_worker_config(self):
@@ -92,7 +92,7 @@ class TestTaskRunner(unittest.TestCase):
         self.assertEqual(task_runner.worker.domain, 'hot')
 
     def test_initialization_with_default_polling_interval(self):
-        task_runner = self.__get_valid_task_runner()
+        task_runner = self.__get_valid_process()
         self.assertEqual(task_runner.worker.get_polling_interval_in_seconds() * 1000, DEFAULT_POLLING_INTERVAL)
 
     def test_initialization_with_polling_interval_passed_in_constructor(self):
@@ -144,7 +144,7 @@ class TestTaskRunner(unittest.TestCase):
                 'update_task',
                 return_value=self.UPDATE_TASK_RESPONSE
             ):
-                task_runner = self.__get_valid_task_runner()
+                task_runner = self.__get_valid_process()
                 start_time = time.time()
                 task_runner.run_once()
                 finish_time = time.time()
@@ -162,7 +162,7 @@ class TestTaskRunner(unittest.TestCase):
                 'update_task',
             ) as mock_update_task:
                 mock_update_task.return_value = self.UPDATE_TASK_RESPONSE
-                task_runner = self.__get_valid_roundrobin_task_runner()
+                task_runner = self.__get_valid_roundrobin_process()
                 for i in range(0, 6):
                     current_task_name = task_runner.worker.get_task_definition_name()
                     task_runner.run_once()
@@ -170,13 +170,9 @@ class TestTaskRunner(unittest.TestCase):
 
     def test_poll_task(self):
         expected_task = self.__get_valid_task()
-        with patch.object(
-            TaskResourceApi,
-            'poll',
-            return_value=self.__get_valid_task()
-        ):
-            task_runner = self.__get_valid_task_runner()
-            task = task_runner._TaskRunner__poll_task()
+        with patch.object(TaskResourceApi, 'poll', return_value=self.__get_valid_task()):
+            worker_process = self.__get_valid_process()
+            task = worker_process._poll_task()
             self.assertEqual(task, expected_task)
 
     def test_poll_task_with_faulty_task_api(self):
@@ -186,13 +182,13 @@ class TestTaskRunner(unittest.TestCase):
             'poll',
             side_effect=Exception()
         ):
-            task_runner = self.__get_valid_task_runner()
-            task = task_runner._TaskRunner__poll_task()
+            task_runner = self.__get_valid_process()
+            task = task_runner._poll_task()
             self.assertEqual(task, expected_task)
 
     def test_execute_task_with_invalid_task(self):
-        task_runner = self.__get_valid_task_runner()
-        task_result = task_runner._TaskRunner__execute_task(None)
+        task_runner = self.__get_valid_process()
+        task_result = task_runner._execute_task(None)
         self.assertEqual(task_result, None)
 
     def test_execute_task_with_faulty_execution_worker(self):
@@ -210,7 +206,7 @@ class TestTaskRunner(unittest.TestCase):
             worker=worker
         )
         task = self.__get_valid_task()
-        task_result = task_runner._TaskRunner__execute_task(task)
+        task_result = task_runner._execute_task(task)
         self.assertEqual(task_result, expected_task_result)
         self.assertIsNotNone(task_result.logs)
 
@@ -222,22 +218,22 @@ class TestTaskRunner(unittest.TestCase):
             worker=worker
         )
         task = self.__get_valid_task()
-        task_result = task_runner._TaskRunner__execute_task(task)
+        task_result = task_runner._execute_task(task)
         self.assertEqual(task_result, expected_task_result)
 
     def test_update_task_with_invalid_task_result(self):
         expected_response = None
-        task_runner = self.__get_valid_task_runner()
-        response = task_runner._TaskRunner__update_task(None)
+        task_runner = self.__get_valid_process()
+        response = task_runner._update_task(None)
         self.assertEqual(response, expected_response)
 
     @patch('time.sleep', Mock(return_value=None))
     def test_update_task_with_faulty_task_api(self):
         expected_response = None
         with patch.object(TaskResourceApi, 'update_task', side_effect=Exception()):
-            task_runner = self.__get_valid_task_runner()
+            task_runner = self.__get_valid_process()
             task_result = self.__get_valid_task_result()
-            response = task_runner._TaskRunner__update_task(task_result)
+            response = task_runner._update_task(task_result)
             self.assertEqual(response, expected_response)
 
     def test_update_task(self):
@@ -247,31 +243,29 @@ class TestTaskRunner(unittest.TestCase):
             'update_task',
             return_value=self.UPDATE_TASK_RESPONSE
         ):
-            task_runner = self.__get_valid_task_runner()
+            task_runner = self.__get_valid_process()
             task_result = self.__get_valid_task_result()
-            response = task_runner._TaskRunner__update_task(task_result)
+            response = task_runner._update_task(task_result)
             self.assertEqual(response, expected_response)
 
     def test_wait_for_polling_interval_with_faulty_worker(self):
         expected_exception = Exception(
             "Failed to get polling interval"
         )
-        with patch.object(
-            ClassWorker,
-            'get_polling_interval_in_seconds',
-            side_effect=expected_exception
-        ):
-            task_runner = self.__get_valid_task_runner()
+        with patch.object(ClassWorker, 'get_polling_interval_in_seconds', side_effect=expected_exception):
+            worker_process = self.__get_valid_process()
             with self.assertRaises(Exception) as context:
-                task_runner._TaskRunner__wait_for_polling_interval()
+                worker_process._wait_for_polling_interval()
                 self.assertEqual(expected_exception, context.exception)
 
     def test_wait_for_polling_interval(self):
         expected_time = self.__get_valid_worker().get_polling_interval_in_seconds()
-        task_runner = self.__get_valid_task_runner()
+        worker_process = self.__get_valid_process()
+        
         start_time = time.time()
-        task_runner._TaskRunner__wait_for_polling_interval()
+        worker_process._wait_for_polling_interval()
         finish_time = time.time()
+        
         spent_time = finish_time - start_time
         self.assertGreater(spent_time, expected_time)
 
@@ -296,13 +290,13 @@ class TestTaskRunner(unittest.TestCase):
             worker_config=worker_config
         )
 
-    def __get_valid_task_runner(self):
+    def __get_valid_process(self):
         return WorkerProcess(
             configuration=Configuration(),
             worker=self.__get_valid_worker()
         )
 
-    def __get_valid_roundrobin_task_runner(self):
+    def __get_valid_roundrobin_process(self):
         return WorkerProcess(
             configuration=Configuration(),
             worker=self.__get_valid_multi_task_worker()

@@ -393,7 +393,7 @@ class WorkflowResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/workflow/externalstoragelocation', 'GET',
+            '/workflow/external-storage-location', 'GET',
             path_params,
             query_params,
             header_params,
@@ -1925,7 +1925,7 @@ class WorkflowResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/workflow/{workflowId}/skiptask/{taskReferenceName}', 'PUT',
+            '/workflow/{workflowId}/skip-task/{taskReferenceName}', 'PUT',
             path_params,
             query_params,
             header_params,

@@ -102,7 +102,7 @@ class TestClients:
         self.__create_workflow_definition(workflowDef)
     
     def __create_workflow_definition(self, workflowDef) -> str:
-        return self.metadata_client.register_workflow_def(workflowDef, True)
+        return self.metadata_client.register_workflow_def(workflowDef)
 
     def __test_get_workflow_definition(self):
         wfDef = self.metadata_client.get_workflow_def(WORKFLOW_DEF_NAME)
@@ -114,7 +114,7 @@ class TestClients:
         workflow >> CustomTask("custom_task", "custom_task_ref_3")
         workflow.workflow_id = self.workflow_id
         updatedWorkflowDef = workflow.to_workflow_def()
-        self.metadata_client.update_workflow_def(updatedWorkflowDef, True)
+        self.metadata_client.update_workflow_def(updatedWorkflowDef)
         wfDef = self.metadata_client.get_workflow_def(WORKFLOW_DEF_NAME)
         assert len(wfDef.tasks) == 3
 

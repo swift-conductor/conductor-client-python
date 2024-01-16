@@ -22,12 +22,9 @@ logger_name = Configuration.get_logging_formatted_name(__name__)
 logger = logging.getLogger(logger_name)
 
 class WorkerProcess:
-    def __init__(
-        self,
-        worker: WorkerAbc,
-        configuration: Configuration = None,
-        metrics_settings: MetricsSettings = None,
-        worker_config: ConfigParser =  None
+    def __init__(self, worker: WorkerAbc, 
+                 configuration: Configuration = None, 
+                 metrics_settings: MetricsSettings = None, worker_config: ConfigParser =  None
     ):
         if not isinstance(worker, WorkerAbc):
             raise Exception('Invalid worker type. Must be of type WorkerAbc.')
@@ -60,15 +57,16 @@ class WorkerProcess:
                 pass
 
     def run_once(self) -> None:
-        task = self.__poll_task()
+        task = self._poll_task()
         if task != None and task.task_id != None:
-            task_result = self.__execute_task(task)
-            self.__update_task(task_result)
-        self.__wait_for_polling_interval()
+            task_result = self._execute_task(task)
+            self._update_task(task_result)
+        
+        self._wait_for_polling_interval()
         self.worker.clear_task_definition_name_cache()
 
 
-    def __poll_task(self) -> Task:
+    def _poll_task(self) -> Task:
         task_definition_name = self.worker.get_task_definition_name()
 
         if self.worker.paused():
@@ -109,7 +107,7 @@ class WorkerProcess:
         return task
 
 
-    def __execute_task(self, task: Task) -> TaskResult:
+    def _execute_task(self, task: Task) -> TaskResult:
         if not isinstance(task, Task):
             return None
 
@@ -163,7 +161,7 @@ class WorkerProcess:
 
         return task_result
 
-    def __update_task(self, task_result: TaskResult):
+    def _update_task(self, task_result: TaskResult):
         if not isinstance(task_result, TaskResult):
             return None
         
@@ -204,7 +202,7 @@ class WorkerProcess:
 
         return None
 
-    def __wait_for_polling_interval(self) -> None:
+    def _wait_for_polling_interval(self) -> None:
         polling_interval = self.worker.get_polling_interval_in_seconds()
         logger.debug(f'Sleep for {polling_interval} seconds')
         time.sleep(polling_interval)

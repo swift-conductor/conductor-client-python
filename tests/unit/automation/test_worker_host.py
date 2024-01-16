@@ -27,8 +27,9 @@ class TestWorkerHost(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             WorkerHost(
                 configuration=Configuration(),
-                workers=ClassWorker()
+                workers=ClassWorker('task')
             )
+            
             self.assertEqual(expected_exception, context.exception)
 
     def test_start_processes(self):

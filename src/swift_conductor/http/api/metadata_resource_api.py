@@ -102,7 +102,7 @@ class MetadataResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/metadata/workflow', 'POST',
+            '/metadata/workflowdef', 'POST',
             path_params,
             query_params,
             header_params,
@@ -401,7 +401,7 @@ class MetadataResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/metadata/workflow/{name}', 'GET',
+            '/metadata/workflowdef/{name}', 'GET',
             path_params,
             query_params,
             header_params,
@@ -490,7 +490,7 @@ class MetadataResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/metadata/workflow', 'GET',
+            '/metadata/workflowdef', 'GET',
             path_params,
             query_params,
             header_params,
@@ -583,7 +583,7 @@ class MetadataResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/metadata/taskdefs/{tasktype}', 'GET',
+            '/metadata/taskdef/{tasktype}', 'GET',
             path_params,
             query_params,
             header_params,
@@ -672,7 +672,7 @@ class MetadataResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/metadata/taskdefs', 'GET',
+            '/metadata/taskdef', 'GET',
             path_params,
             query_params,
             header_params,
@@ -866,7 +866,7 @@ class MetadataResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/metadata/taskdefs', 'POST',
+            '/metadata/taskdef', 'POST',
             path_params,
             query_params,
             header_params,
@@ -955,7 +955,7 @@ class MetadataResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/metadata/taskdefs/{tasktype}', 'DELETE',
+            '/metadata/taskdef/{tasktype}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -1052,7 +1052,7 @@ class MetadataResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/metadata/workflow/{name}/{version}', 'DELETE',
+            '/metadata/workflowdef/{name}/{version}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -1149,7 +1149,7 @@ class MetadataResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/metadata/workflow', 'PUT',
+            '/metadata/workflowdef', 'PUT',
             path_params,
             query_params,
             header_params,
@@ -1246,7 +1246,7 @@ class MetadataResourceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/metadata/taskdefs', 'PUT',
+            '/metadata/taskdef', 'PUT',
             path_params,
             query_params,
             header_params,
